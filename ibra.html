@@ -1,0 +1,2579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ibra Foundation School Mirnga - Management System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#059669',
+                        secondary: '#047857',
+                        accent: '#10b981',
+                        light: '#f0fdf4',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f0fdf4 0%, #ffffff 100%);
+            min-height: 100vh;
+        }
+        
+        .page {
+            display: none;
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        .page.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .sidebar {
+            background: linear-gradient(180deg, #059669 0%, #047857 100%);
+            min-height: 100vh;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-item {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .nav-item:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateX(5px);
+        }
+        
+        .card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(5, 150, 105, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(5, 150, 105, 0.2);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(5, 150, 105, 0.4);
+        }
+        
+        .btn-secondary {
+            background: white;
+            color: #059669;
+            border: 2px solid #059669;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-secondary:hover {
+            background: #059669;
+            color: white;
+        }
+        
+        .input-field {
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 12px;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+        
+        .input-field:focus {
+            outline: none;
+            border-color: #059669;
+            box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.1);
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f0fdf4 100%);
+            border-left: 4px solid #059669;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 500px;
+            width: 90%;
+            animation: slideIn 0.3s ease;
+        }
+        
+        @keyframes slideIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        
+        .table-container {
+            overflow-x: auto;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th {
+            background: #059669;
+            color: white;
+            padding: 15px;
+            text-align: left;
+        }
+        
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        tr:hover {
+            background: #f0fdf4;
+        }
+        
+        .badge {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+        
+        .badge-success {
+            background: #d1fae5;
+            color: #059669;
+        }
+        
+        .badge-warning {
+            background: #fef3c7;
+            color: #d97706;
+        }
+        
+        .badge-danger {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+        
+        .login-container {
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .login-box {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            width: 100%;
+            max-width: 450px;
+        }
+        
+        .logo {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            color: white;
+            font-size: 2em;
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background: #e5e7eb;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #059669 0%, #10b981 100%);
+            transition: width 0.5s ease;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            border-left: 4px solid #059669;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            z-index: 2000;
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+        }
+        
+        .tab-btn {
+            padding: 10px 20px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+        
+        .tab-btn.active {
+            color: #059669;
+            border-bottom-color: #059669;
+        }
+        
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            min-height: 100vh;
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            .sidebar {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Notification Container -->
+    <div id="notification" class="notification">
+        <i class="fas fa-check-circle text-green-600 mr-2"></i>
+        <span id="notificationText">Operation successful!</span>
+    </div>
+
+    <!-- PAGE 1: LANDING/HOME PAGE -->
+    <div id="page-home" class="page active">
+        <nav style="background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.1); position: fixed; width: 100%; z-index: 100;">
+            <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+                <div class="flex items-center">
+                    <div class="w-12 h-12 bg-gradient-to-br from-green-600 to-green-700 rounded-full flex items-center justify-center text-white font-bold text-xl mr-3">
+                        IF
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold text-gray-800">Ibra Foundation School</h1>
+                        <p class="text-sm text-green-600">Mirnga</p>
+                    </div>
+                </div>
+                <div class="hidden md:flex space-x-6">
+                    <a href="#" onclick="showPage('home')" class="text-gray-700 hover:text-green-600 font-medium">Home</a>
+                    <a href="#" onclick="showPage('about')" class="text-gray-700 hover:text-green-600 font-medium">About</a>
+                    <a href="#" onclick="showPage('admission')" class="text-gray-700 hover:text-green-600 font-medium">Admission</a>
+                    <a href="#" onclick="showPage('login')" class="text-gray-700 hover:text-green-600 font-medium">Portal Login</a>
+                </div>
+                <button onclick="showPage('login')" class="btn-primary">
+                    <i class="fas fa-sign-in-alt mr-2"></i>Login
+                </button>
+            </div>
+        </nav>
+
+        <div class="pt-20">
+            <!-- Hero Section -->
+            <div class="container mx-auto px-6 py-20">
+                <div class="flex flex-col md:flex-row items-center">
+                    <div class="md:w-1/2 mb-10 md:mb-0">
+                        <h1 class="text-5xl font-bold text-gray-800 mb-6 leading-tight">
+                            Excellence in <span class="text-green-600">Education</span>
+                        </h1>
+                        <p class="text-xl text-gray-600 mb-8">
+                            Nurturing minds from Nursery 1 to SS3. Building tomorrow's leaders through quality education and moral values at Ibra Foundation School Mirnga.
+                        </p>
+                        <div class="flex space-x-4">
+                            <button onclick="showPage('admission')" class="btn-primary text-lg">
+                                <i class="fas fa-user-plus mr-2"></i>Apply for Admission
+                            </button>
+                            <button onclick="showPage('login')" class="btn-secondary text-lg">
+                                <i class="fas fa-user mr-2"></i>Student Portal
+                            </button>
+                        </div>
+                    </div>
+                    <div class="md:w-1/2 flex justify-center">
+                        <div class="relative">
+                            <div class="w-96 h-96 bg-gradient-to-br from-green-100 to-green-200 rounded-full flex items-center justify-center">
+                                <i class="fas fa-graduation-cap text-9xl text-green-600"></i>
+                            </div>
+                            <div class="absolute -bottom-4 -right-4 bg-white p-4 rounded-xl shadow-lg">
+                                <p class="text-2xl font-bold text-green-600">15+</p>
+                                <p class="text-sm text-gray-600">Years of Excellence</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Features Section -->
+            <div class="bg-white py-20">
+                <div class="container mx-auto px-6">
+                    <h2 class="text-3xl font-bold text-center text-gray-800 mb-12">Our Academic Structure</h2>
+                    <div class="grid md:grid-cols-3 gap-8">
+                        <div class="card p-8 text-center">
+                            <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i class="fas fa-child text-2xl text-green-600"></i>
+                            </div>
+                            <h3 class="text-xl font-bold mb-2">Nursery Section</h3>
+                            <p class="text-gray-600">Nursery 1 & 2 - Foundation years for early childhood development</p>
+                        </div>
+                        <div class="card p-8 text-center">
+                            <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i class="fas fa-book-reader text-2xl text-green-600"></i>
+                            </div>
+                            <h3 class="text-xl font-bold mb-2">Primary Section</h3>
+                            <p class="text-gray-600">Primary 1-6 - Building strong academic foundations</p>
+                        </div>
+                        <div class="card p-8 text-center">
+                            <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i class="fas fa-school text-2xl text-green-600"></i>
+                            </div>
+                            <h3 class="text-xl font-bold mb-2">Secondary Section</h3>
+                            <p class="text-gray-600">JSS 1-3 & SS 1-3 - Preparing for higher education</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats Section -->
+            <div class="bg-gradient-to-r from-green-600 to-green-700 py-16 text-white">
+                <div class="container mx-auto px-6">
+                    <div class="grid md:grid-cols-4 gap-8 text-center">
+                        <div>
+                            <p class="text-4xl font-bold mb-2">500+</p>
+                            <p>Students Enrolled</p>
+                        </div>
+                        <div>
+                            <p class="text-4xl font-bold mb-2">50+</p>
+                            <p>Qualified Teachers</p>
+                        </div>
+                        <div>
+                            <p class="text-4xl font-bold mb-2">95%</p>
+                            <p>Exam Success Rate</p>
+                        </div>
+                        <div>
+                            <p class="text-4xl font-bold mb-2">15+</p>
+                            <p>Years Experience</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PAGE 2: LOGIN PAGE -->
+<div id="page-login" class="page">
+    <div class="login-container">
+        <div class="login-box">
+            <div class="logo"><i class="fas fa-school"></i></div>
+            <h2 class="text-2xl font-bold text-center text-gray-800 mb-2">Welcome Back</h2>
+            <p class="text-center text-gray-600 mb-6">Ibra Foundation School Mirnga</p>
+            
+            <!-- Registration Options -->
+            <div class="mb-6 p-4 bg-green-50 rounded-lg">
+                <p class="text-sm text-green-800 font-semibold mb-2">New here?</p>
+                <div class="flex gap-2">
+                    <button onclick="showRegistration('student')" class="flex-1 btn-secondary text-sm py-2">
+                        <i class="fas fa-user-graduate mr-1"></i>New Student
+                    </button>
+                    <button onclick="showRegistration('teacher')" class="flex-1 btn-secondary text-sm py-2">
+                        <i class="fas fa-chalkboard-teacher mr-1"></i>Apply to Teach
+                    </button>
+                </div>
+            </div>
+            
+            <div class="mb-6">
+                <div class="flex border-b border-gray-200">
+                    <button class="tab-btn active flex-1" onclick="switchLoginTab('student')">Student</button>
+                    <button class="tab-btn flex-1" onclick="switchLoginTab('staff')">Staff</button>
+                </div>
+            </div>
+
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <!-- ... existing login form ... -->
+            </form>
+            
+            <!-- ... back button ... -->
+        </div>
+    </div>
+</div>
+
+<!-- NEW: Student Self-Registration Page -->
+<div id="page-register-student" class="page">
+    <div class="min-h-screen bg-gray-50 py-10">
+        <div class="container mx-auto px-6 max-w-4xl">
+            <div class="bg-white rounded-2xl shadow-lg p-8">
+                <div class="text-center mb-8">
+                    <h1 class="text-3xl font-bold text-gray-800">Student Registration</h1>
+                    <p class="text-gray-600">Create your account to apply for admission</p>
+                </div>
+                
+                <div id="studentRegStep1">
+                    <form onsubmit="submitStudentRegistration(event)">
+                        <!-- Same fields as admission form -->
+                        <div class="grid md:grid-cols-2 gap-6 mb-6">
+                            <div>
+                                <label class="block text-gray-700 mb-2">Surname *</label>
+                                <input type="text" id="regSurname" class="input-field" required>
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 mb-2">First Name *</label>
+                                <input type="text" id="regFirstName" class="input-field" required>
+                            </div>
+                            <!-- ... other fields ... -->
+                        </div>
+                        
+                        <div class="bg-yellow-50 p-4 rounded-lg mb-6">
+                            <p class="text-yellow-800 font-semibold">
+                                <i class="fas fa-info-circle mr-2"></i>
+                                Your ID will be generated after registration. 
+                                Example: <strong>IFS/STD/26/0001</strong>
+                            </p>
+                        </div>
+                        
+                        <button type="submit" class="btn-primary w-full text-lg" id="studentRegBtn">
+                            <i class="fas fa-user-plus mr-2"></i>Register & Continue to Payment
+                        </button>
+                    </form>
+                </div>
+                
+                <div id="studentRegStep2" style="display: none;" class="text-center py-10">
+                    <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-check text-4xl text-green-600"></i>
+                    </div>
+                    <h2 class="text-2xl font-bold mb-2">Registration Successful!</h2>
+                    <p class="text-gray-600 mb-4">Your Student ID:</p>
+                    <div class="bg-green-50 p-4 rounded-lg mb-6 inline-block">
+                        <p class="text-3xl font-bold text-green-600" id="newStudentId">-</p>
+                    </div>
+                    <p class="text-gray-600 mb-4">Default password is your ID above</p>
+                    <button onclick="proceedToPayment()" class="btn-primary mb-2">
+                        <i class="fas fa-credit-card mr-2"></i>Pay Registration Fee (₦5,500)
+                    </button>
+                    <p class="text-sm text-gray-500">or</p>
+                    <button onclick="showPage('login')" class="text-green-600 hover:underline">
+                        Login later and pay from dashboard
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- NEW: Teacher Application Page -->
+<div id="page-apply-teacher" class="page">
+    <div class="min-h-screen bg-gray-50 py-10">
+        <div class="container mx-auto px-6 max-w-2xl">
+            <div class="bg-white rounded-2xl shadow-lg p-8">
+                <div class="text-center mb-8">
+                    <h1 class="text-3xl font-bold text-gray-800">Apply to Teach</h1>
+                    <p class="text-gray-600">Join our team of dedicated educators</p>
+                </div>
+                
+                <div class="bg-blue-50 p-4 rounded-lg mb-6">
+                    <p class="text-blue-800 text-sm">
+                        <i class="fas fa-info-circle mr-2"></i>
+                        Your application will be reviewed by the Principal. 
+                        If approved, you will receive your Staff ID via email.
+                        Example format: <strong>IFS/TCH/2024/001</strong>
+                    </p>
+                </div>
+                
+                <form onsubmit="submitTeacherApplication(event)">
+                    <div class="mb-4">
+                        <label class="block text-gray-700 mb-2">Full Name *</label>
+                        <input type="text" id="applyTeacherName" class="input-field" required>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-gray-700 mb-2">Email *</label>
+                        <input type="email" id="applyTeacherEmail" class="input-field" required>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-gray-700 mb-2">Phone *</label>
+                        <input type="tel" id="applyTeacherPhone" class="input-field" required>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-gray-700 mb-2">Department/Subject *</label>
+                        <select id="applyTeacherDept" class="input-field" required>
+                            <option value="">Select Department</option>
+                            <option value="Mathematics">Mathematics</option>
+                            <option value="English">English Language</option>
+                            <option value="Science">Science</option>
+                            <option value="Social Studies">Social Studies</option>
+                            <option value="Arts">Arts</option>
+                            <option value="Vocational">Vocational</option>
+                        </select>
+                    </div>
+                    <div class="mb-4">
+                        label class="block text-gray-700 mb-2">Create Password *</label>
+                        <input type="password" id="applyTeacherPassword" class="input-field" required minlength="6">
+                    </div>
+                    <div class="mb-6">
+                        <label class="block text-gray-700 mb-2">Expected Salary (Optional)</label>
+                        <input type="number" id="applyTeacherSalary" class="input-field" placeholder="Amount in Naira">
+                    </div>
+                    
+                    <button type="submit" class="btn-primary w-full text-lg" id="teacherApplyBtn">
+                        <i class="fas fa-paper-plane mr-2"></i>Submit Application
+                    </button>
+                </form>
+                
+                <div class="mt-6 text-center">
+                    <button onclick="showPage('login')" class="text-gray-500 hover:text-green-600">
+                        <i class="fas fa-arrow-left mr-1"></i>Back to Login
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+                    <!-- Success Message -->
+                    <div id="admissionSuccess" style="display: none;" class="text-center py-10">
+                        <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-check text-4xl text-green-600"></i>
+                        </div>
+                        <h2 class="text-2xl font-bold text-gray-800 mb-2">Registration Successful!</h2>
+                        <p class="text-gray-600 mb-4">Your registration number has been generated</p>
+                        <div class="bg-green-50 p-4 rounded-lg mb-6 inline-block">
+                            <p class="text-sm text-gray-600">Your Registration Number:</p>
+                            <p class="text-2xl font-bold text-green-600" id="generatedRegNo">STD2024001</p>
+                        </div>
+                        <p class="text-gray-600 mb-6">Use this number to login to your student portal</p>
+                        <button onclick="showPage('login')" class="btn-primary">
+                            <i class="fas fa-sign-in-alt mr-2"></i>Login to Portal
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PAGE 4: STUDENT DASHBOARD -->
+    <div id="page-student-dashboard" class="page">
+        <div class="dashboard-grid">
+            <!-- Sidebar -->
+            <div class="sidebar text-white p-6">
+                <div class="mb-8 text-center">
+                    <div class="w-20 h-20 bg-white rounded-full flex items-center justify-center mx-auto mb-3">
+                        <i class="fas fa-user-graduate text-4xl text-green-600"></i>
+                    </div>
+                    <h3 class="font-bold text-lg">Student Portal</h3>
+                    <p class="text-sm opacity-80" id="studentNameDisplay">Welcome, Student</p>
+                </div>
+                
+                <nav>
+                    <div class="nav-item p-3 rounded-lg mb-2 flex items-center" onclick="showStudentSection('overview')">
+                        <i class="fas fa-home w-6"></i>
+                        <span>Dashboard</span>
+                    </div>
+                    <div class="nav-item p-3 rounded-lg mb-2 flex items-center" onclick="showStudentSection('profile')">
+                        <i class="fas fa-user w-6"></i>
+                        <span>My Profile</span>
+                    </div>
+                    <div class="nav-item p-3 rounded-lg mb-2 flex items-center" onclick="showStudentSection('payments')">
+                        <i class="fas fa-money-bill w-6"></i>
+                        <span>Fee Payments</span>
+                    </div>
+                    <div class="nav-item p-3 rounded-lg mb-2 flex items-center" onclick="showStudentSection('results')">
+                        <i class="fas fa-chart-line w-6"></i>
+                        <span>Results</span>
+                    </div>
+                    <div class="nav-item p-3 rounded-lg mb-2 flex items-center" onclick="showStudentSection('timetable')">
+                        <i class="fas fa-calendar w-6"></i>
+                        <span>Timetable</span>
+                    </div>
+                    <div class="nav-item p-3 rounded-lg mb-2 flex items-center bg-white bg-opacity-20" onclick="logout()">
+                        <i class="fas fa-sign-out-alt w-6"></i>
+                        <span>Logout</span>
+                    </div>
+                </nav>
+            </div>
+
+            <!-- Main Content -->
+            <div class="p-8 bg-gray-50">
+                <!-- Overview Section -->
+                <div id="studentSection-overview" class="student-section">
+                    <h1 class="text-3xl font-bold text-gray-800 mb-6">Student Dashboard</h1>
+                    
+                    <div class="grid md:grid-cols-4 gap-6 mb-8">
+                        <div class="stat-card p-6 rounded-xl">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-gray-600 text-sm">Reg. Number</p>
+                                    <p class="text-xl font-bold text-gray-800" id="dashboardRegNo">-</p>
+                                </div>
+                                <i class="fas fa-id-card text-3xl text-green-600"></i>
+                            </div>
+                        </div>
+                        <div class="stat-card p-6 rounded-xl">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-gray-600 text-sm">Current Class</p>
+                                    <p class="text-xl font-bold text-gray-800" id="dashboardClass">-</p>
+                                </div>
+                                <i class="fas fa-graduation-cap text-3xl text-green-600"></i>
+                            </div>
+                        </div>
+                        <div class="stat-card p-6 rounded-xl">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-gray-600 text-sm">Payment Status</p>
+                                    <p class="text-xl font-bold text-green-600">Paid</p>
+                                </div>
+                                <i class="fas fa-check-circle text-3xl text-green-600"></i>
+                            </div>
+                        </div>
+                        <div class="stat-card p-6 rounded-xl">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-gray-600 text-sm">Attendance</p>
+                                    <p class="text-xl font-bold text-gray-800">95%</p>
+                                </div>
+                                <i class="fas fa-calendar-check text-3xl text-green-600"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="card p-6">
+                            <h3 class="text-xl font-bold mb-4">Recent Payments</h3>
+                            <table class="w-full">
+                                <thead>
+                                    <tr class="text-left text-sm text-gray-600">
+                                        <th class="pb-2">Description</th>
+                                        <th class="pb-2">Amount</th>
+                                        <th class="pb-2">Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="py-2">School Fees</td>
+                                        <td>₦25,000</td>
+                                        <td>Jan 15, 2024</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="py-2">PTA Levy</td>
+                                        <td>₦2,000</td>
+                                        <td>Jan 10, 2024</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="card p-6">
+                            <h3 class="text-xl font-bold mb-4">Upcoming Events</h3>
+                            <div class="space-y-3">
+                                <div class="flex items-center p-3 bg-green-50 rounded-lg">
+                                    <div class="w-12 h-12 bg-green-600 text-white rounded-lg flex flex-col items-center justify-center mr-3">
+                                        <span class="text-xs">MAR</span>
+                                        <span class="font-bold">15</span>
+                                    </div>
+                                    <div>
+                                        <p class="font-semibold">Mid-Term Exams</p>
+                                        <p class="text-sm text-gray-600">Starts Monday</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center p-3 bg-green-50 rounded-lg">
+                                    <div class="w-12 h-12 bg-green-600 text-white rounded-lg flex flex-col items-center justify-center mr-3">
+                                        <span class="text-xs">MAR</span>
+                                        <span class="font-bold">22</span>
+                                    </div>
+                                    <div>
+                                        <p class="font-semibold">Parents Meeting</p>
+                                        <p class="text-sm text-gray-600">10:00 AM</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Payments Section -->
+                <div id="studentSection-payments" class="student-section" style="display: none;">
+    <h1 class="text-3xl font-bold text-gray-800 mb-6">Fee Payments</h1>
+    
+    <!-- Pay with Paystack -->
+    <div class="card p-6 mb-6">
+        <h3 class="text-xl font-bold mb-4"><i class="fas fa-credit-card text-green-600 mr-2"></i>Pay Online with Paystack</h3>
+        <p class="text-gray-600 mb-4">Pay securely using your card, bank transfer, USSD, or mobile money.</p>
+        
+        <form onsubmit="handlePaystackPayment(event)">
+            <div class="grid md:grid-cols-2 gap-6 mb-4">
+                <div>
+                    <label class="block text-gray-700 mb-2">Payment Type</label>
+                    <select class="input-field" id="paystackPaymentType" onchange="updatePaymentAmount()">
+                        <option value="School Fees" data-amount="25000">School Fees</option>
+                        <option value="Registration Fee" data-amount="5500">Registration Fee</option>
+                        <option value="Examination Fees" data-amount="3000">Examination Fees</option>
+                        <option value="PTA Levy" data-amount="2000">PTA Levy</option>
+                        <option value="Textbooks" data-amount="15000">Textbooks</option>
+                        <option value="Uniform" data-amount="8000">Uniform</option>
+                        <option value="Other">Other Amount</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-gray-700 mb-2">Amount (₦)</label>
+                    <input type="number" class="input-field" id="paystackAmount" value="25000" required>
+                </div>
+            </div>
+            <div class="mb-4">
+                <label class="block text-gray-700 mb-2">Email Address</label>
+                <input type="email" class="input-field" id="paystackEmail" placeholder="Enter your email" required>
+            </div>
+            <button type="submit" class="btn-primary w-full text-lg" id="paystackBtn">
+                <i class="fas fa-lock mr-2"></i>Pay Securely with Paystack
+            </button>
+            <p class="text-sm text-gray-500 mt-2 text-center">
+                <i class="fas fa-shield-alt mr-1"></i>Secured by Paystack. Your payment information is encrypted.
+            </p>
+        </form>
+    </div>
+
+    <!-- Payment History -->
+    <div class="card p-6">
+        <h3 class="text-xl font-bold mb-4">Payment History</h3>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Receipt No</th>
+                        <th>Description</th>
+                        <th>Amount</th>
+                        <th>Method</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="studentPaymentHistory">
+                    <tr><td colspan="6" class="text-center py-4">Loading...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+                <!-- Profile Section -->
+                <div id="studentSection-profile" class="student-section" style="display: none;">
+                    <h1 class="text-3xl font-bold text-gray-800 mb-6">My Profile</h1>
+                    <div class="card p-6">
+                        <div class="flex items-center mb-6">
+                            <div class="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mr-6">
+                                <i class="fas fa-user text-4xl text-green-600"></i>
+                            </div>
+                            <div>
+                                <h2 class="text-2xl font-bold" id="profileName">Student Name</h2>
+                                <p class="text-gray-600" id="profileClass">Class</p>
+                                <p class="text-green-600 font-semibold" id="profileRegNo">Reg No</p>
+                            </div>
+                        </div>
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <div>
+                                <h3 class="font-bold mb-3 text-gray-700">Personal Information</h3>
+                                <div class="space-y-2">
+                                    <p><span class="text-gray-600">Date of Birth:</span> <span id="profileDOB">-</span></p>
+                                    <p><span class="text-gray-600">Gender:</span> <span id="profileGender">-</span></p>
+                                    <p><span class="text-gray-600">Address:</span> <span id="profileAddress">-</span></p>
+                                </div>
+                            </div>
+                            <div>
+                                <h3 class="font-bold mb-3 text-gray-700">Guardian Information</h3>
+                                <div class="space-y-2">
+                                    <p><span class="text-gray-600">Name:</span> <span id="profileParent">-</span></p>
+                                    <p><span class="text-gray-600">Phone:</span> <span id="profilePhone">-</span></p>
+                                    <p><span class="text-gray-600">Email:</span> <span id="profileEmail">-</span></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Results Section -->
+                <div id="studentSection-results" class="student-section" style="display: none;">
+                    <h1 class="text-3xl font-bold text-gray-800 mb-6">Academic Results</h1>
+                    <div class="card p-6">
+                        <div class="mb-4 flex justify-between items-center">
+                            <select class="input-field w-auto">
+                                <option>First Term 2023/2024</option>
+                                <option>Second Term 2023/2024</option>
+                                <option>Third Term 2022/2023</option>
+                            </select>
+                            <button class="btn-secondary">
+                                <i class="fas fa-print mr-2"></i>Print Result
+                            </button>
+                        </div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Subject</th>
+                                    <th>CA (40%)</th>
+                                    <th>Exam (60%)</th>
+                                    <th>Total</th>
+                                    <th>Grade</th>
+                                    <th>Remark</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Mathematics</td>
+                                    <td>32</td>
+                                    <td>54</td>
+                                    <td>86</td>
+                                    <td>A</td>
+                                    <td>Excellent</td>
+                                </tr>
+                                <tr>
+                                    <td>English Language</td>
+                                    <td>30</td>
+                                    <td>50</td>
+                                    <td>80</td>
+                                    <td>A</td>
+                                    <td>Excellent</td>
+                                </tr>
+                                <tr>
+                                    <td>Basic Science</td>
+                                    <td>28</td>
+                                    <td>48</td>
+                                    <td>76</td>
+                                    <td>B</td>
+                                    <td>Very Good</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="mt-4 p-4 bg-green-50 rounded-lg">
+                            <p class="font-bold">Total Score: 242/300</p>
+                            <p class="font-bold">Average: 80.67%</p>
+                            <p class="font-bold">Position: 3rd out of 45</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Timetable Section -->
+                <div id="studentSection-timetable" class="student-section" style="display: none;">
+                    <h1 class="text-3xl font-bold text-gray-800 mb-6">Class Timetable</h1>
+                    <div class="card p-6 overflow-x-auto">
+                        <table class="min-w-full">
+                            <thead>
+                                <tr>
+                                    <th>Time</th>
+                                    <th>Monday</th>
+                                    <th>Tuesday</th>
+                                    <th>Wednesday</th>
+                                    <th>Thursday</th>
+                                    <th>Friday</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="font-bold">8:00 - 9:00</td>
+                                    <td class="bg-green-50">Mathematics</td>
+                                    <td class="bg-blue-50">English</td>
+                                    <td class="bg-green-50">Mathematics</td>
+                                    <td class="bg-yellow-50">Basic Science</td>
+                                    <td class="bg-purple-50">Social Studies</td>
+                                </tr>
+                                <tr>
+                                    <td class="font-bold">9:00 - 10:00</td>
+                                    <td class="bg-blue-50">English</td>
+                                    <td class="bg-green-50">Mathematics</td>
+                                    <td class="bg-yellow-50">Basic Science</td>
+                                    <td class="bg-blue-50">English</td>
+                                    <td class="bg-green-50">Mathematics</td>
+                                </tr>
+                                <tr>
+                                    <td class="font-bold">10:00 - 11:00</td>
+                                    <td colspan="5" class="text-center bg-gray-100 font-bold">BREAK TIME</td>
+                                </tr>
+                                <tr>
+                                    <td class="font-bold">11:00 - 12:00</td>
+                                    <td class="bg-yellow-50">Basic Science</td>
+                                    <td class="bg-purple-50">Social Studies</td>
+                                    <td class="bg-pink-50">Civic Education</td>
+                                    <td class="bg-green-50">Mathematics</td>
+                                    <td class="bg-blue-50">English</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PAGE 5: TEACHER DASHBOARD -->
+    <div id="page-teacher-dashboard" class="page">
+        <div class="dashboard-grid">
+            <div class="sidebar text-white p-6">
+                <div class="mb-8 text-center">
+                    <div class="w-20 h-20 bg-white rounded-full flex items-center justify-center mx-auto mb-3">
+                        <i class="fas fa-chalkboard-teacher text-4xl text-green-600"></i>
+                    </div>
+                    <h3 class="font-bold text-lg">Teacher Portal</h3>
+                    <p class="text-sm opacity-80" id="teacherNameDisplay">Welcome, Teacher</p>
+                </div>
+                
+                <nav>
+                    <div class="nav-item p-3 rounded-lg mb-2 flex items-center" onclick="showTeacherSection('dashboard')">
+                        <i class="fas fa-home w-6"></i>
+                        <span>Dashboard</span>
+                    </div>
+                    <div class="nav-item p-3 rounded-lg mb-2 flex items-center" onclick="showTeacherSection('students')">
+                        <i class="fas fa-users w-6"></i>
+                        <span>My Students</span>
+                    </div>
+                    <div class="nav-item p-3 rounded-lg mb-2 flex items-center" onclick="showTeacherSection('attendance')">
+                        <i class="fas fa-clipboard-check w-6"></i>
+                        <span>Attendance</span>
+                    </div>
+                    <div class="nav-item p-3 rounded-lg mb-2 flex items-center" onclick="showTeacherSection('grades')">
+                        <i class="fas fa-chart-bar w-6"></i>
+                        <span>Enter Grades</span>
+                    </div>
+                    <div class="nav-item p-3 rounded-lg mb-2 flex items-center" onclick="showTeacherSection('salary')">
+                        <i class="fas fa-money-bill-wave w-6"></i>
+                        <span>Salary</span>
+                    </div>
+                    <div class="nav-item p-3 rounded-lg mb-2 flex items-center bg-white bg-opacity-20" onclick="logout()">
+                        <i class="fas fa-sign-out-alt w-6"></i>
+                        <span>Logout</span>
+                    </div>
+                </nav>
+            </div>
+
+            <div class="p-8 bg-gray-50">
+                <!-- Teacher Dashboard Overview -->
+                <div id="teacherSection-dashboard" class="teacher-section">
+                    <h1 class="text-3xl font-bold text-gray-800 mb-6">Teacher Dashboard</h1>
+                    
+                    <div class="grid md:grid-cols-4 gap-6 mb-8">
+                        <div class="stat-card p-6 rounded-xl">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-gray-600 text-sm">Total Students</p>
+                                    <p class="text-2xl font-bold text-gray-800">45</p>
+                                </div>
+                                <i class="fas fa-users text-3xl text-green-600"></i>
+                            </div>
+                        </div>
+                        <div class="stat-card p-6 rounded-xl">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-gray-600 text-sm">Classes</p>
+                                    <p class="text-2xl font-bold text-gray-800">3</p>
+                                </div>
+                                <i class="fas fa-chalkboard text-3xl text-green-600"></i>
+                            </div>
+                        </div>
+                        <div class="stat-card p-6 rounded-xl">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-gray-600 text-sm">Subjects</p>
+                                    <p class="text-2xl font-bold text-gray-800">2</p>
+                                </div>
+                                <i class="fas fa-book text-3xl text-green-600"></i>
+                            </div>
+                        </div>
+                        <div class="stat-card p-6 rounded-xl">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-gray-600 text-sm">Salary Status</p>
+                                    <p class="text-2xl font-bold text-green-600">Paid</p>
+                                </div>
+                                <i class="fas fa-check-circle text-3xl text-green-600"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="card p-6">
+                            <h3 class="text-xl font-bold mb-4">Today's Classes</h3>
+                            <div class="space-y-3">
+                                <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                    <div>
+                                        <p class="font-semibold">JSS 2A - Mathematics</p>
+                                        <p class="text-sm text-gray-600">8:00 AM - 9:00 AM</p>
+                                    </div>
+                                    <span class="badge badge-success">Completed</span>
+                                </div>
+                                <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                    <div>
+                                        <p class="font-semibold">JSS 2B - Mathematics</p>
+                                        <p class="text-sm text-gray-600">9:00 AM - 10:00 AM</p>
+                                    </div>
+                                    <span class="badge badge-warning">In Progress</span>
+                                </div>
+                                <div class="flex items-center justify-between p-3 bg-green-50 rounded-lg border-2 border-green-200">
+                                    <div>
+                                        <p class="font-semibold">SS 1 - Further Math</p>
+                                        <p class="text-sm text-gray-600">11:00 AM - 12:00 PM</p>
+                                    </div>
+                                    <span class="badge badge-warning">Upcoming</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card p-6">
+                            <h3 class="text-xl font-bold mb-4">Quick Actions</h3>
+                            <div class="grid grid-cols-2 gap-4">
+                                <button onclick="showTeacherSection('attendance')" class="p-4 bg-green-50 rounded-lg hover:bg-green-100 transition text-center">
+                                    <i class="fas fa-clipboard-check text-2xl text-green-600 mb-2"></i>
+                                    <p class="font-semibold">Mark Attendance</p>
+                                </button>
+                                <button onclick="showTeacherSection('grades')" class="p-4 bg-green-50 rounded-lg hover:bg-green-100 transition text-center">
+                                    <i class="fas fa-chart-bar text-2xl text-green-600 mb-2"></i>
+                                    <p class="font-semibold">Enter Grades</p>
+                                </button>
+                                <button class="p-4 bg-green-50 rounded-lg hover:bg-green-100 transition text-center">
+                                    <i class="fas fa-file-alt text-2xl text-green-600 mb-2"></i>
+                                    <p class="font-semibold">Upload Material</p>
+                                </button>
+                                <button class="p-4 bg-green-50 rounded-lg hover:bg-green-100 transition text-center">
+                                    <i class="fas fa-envelope text-2xl text-green-600 mb-2"></i>
+                                    <p class="font-semibold">Message Parents</p>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Students Section -->
+                <div id="teacherSection-students" class="teacher-section" style="display: none;">
+                    <h1 class="text-3xl font-bold text-gray-800 mb-6">My Students</h1>
+                    <div class="card p-6">
+                        <div class="mb-4 flex justify-between items-center">
+                            <input type="text" placeholder="Search students..." class="input-field w-64">
+                            <select class="input-field w-auto">
+                                <option>All Classes</option>
+                                <option>JSS 2A</option>
+                                <option>JSS 2B</option>
+                                <option>SS 1</option>
+                            </select>
+                        </div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Reg. No</th>
+                                    <th>Name</th>
+                                    <th>Class</th>
+                                    <th>Gender</th>
+                                    <th>Parent Contact</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>STD2024001</td>
+                                    <td>John Doe</td>
+                                    <td>JSS 2A</td>
+                                    <td>Male</td>
+                                    <td>08012345678</td>
+                                    <td>
+                                        <button class="text-green-600 hover:text-green-800"><i class="fas fa-eye"></i></button>
+                                        <button class="text-blue-600 hover:text-blue-800 ml-2"><i class="fas fa-edit"></i></button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>STD2024002</td>
+                                    <td>Jane Smith</td>
+                                    <td>JSS 2A</td>
+                                    <td>Female</td>
+                                    <td>08087654321</td>
+                                    <td>
+                                        <button class="text-green-600 hover:text-green-800"><i class="fas fa-eye"></i></button>
+                                        <button class="text-blue-600 hover:text-blue-800 ml-2"><i class="fas fa-edit"></i></button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Attendance Section -->
+                <div id="teacherSection-attendance" class="teacher-section" style="display: none;">
+                    <h1 class="text-3xl font-bold text-gray-800 mb-6">Mark Attendance</h1>
+                    <div class="card p-6">
+                        <div class="mb-4 flex gap-4">
+                            <select class="input-field w-auto">
+                                <option>JSS 2A</option>
+                                <option>JSS 2B</option>
+                                <option>SS 1</option>
+                            </select>
+                            <input type="date" class="input-field w-auto" value="2024-03-01">
+                        </div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Reg. No</th>
+                                    <th>Name</th>
+                                    <th>Status</th>
+                                    <th>Remarks</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>STD2024001</td>
+                                    <td>John Doe</td>
+                                    <td>
+                                        <select class="input-field w-auto">
+                                            <option value="present" selected>Present</option>
+                                            <option value="absent">Absent</option>
+                                            <option value="late">Late</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="text" class="input-field" placeholder="Optional remarks"></td>
+                                </tr>
+                                <tr>
+                                    <td>STD2024002</td>
+                                    <td>Jane Smith</td>
+                                    <td>
+                                        <select class="input-field w-auto">
+                                            <option value="present" selected>Present</option>
+                                            <option value="absent">Absent</option>
+                                            <option value="late">Late</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="text" class="input-field" placeholder="Optional remarks"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <button class="btn-primary mt-4" onclick="showNotification('Attendance saved successfully!')">
+                            <i class="fas fa-save mr-2"></i>Save Attendance
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Grades Section -->
+                <div id="teacherSection-grades" class="teacher-section" style="display: none;">
+                    <h1 class="text-3xl font-bold text-gray-800 mb-6">Enter Grades</h1>
+                    <div class="card p-6">
+                        <div class="mb-4 flex gap-4">
+                            <select class="input-field w-auto">
+                                <option>JSS 2A</option>
+                                <option>JSS 2B</option>
+                            </select>
+                            <select class="input-field w-auto">
+                                <option>Mathematics</option>
+                                <option>Further Mathematics</option>
+                            </select>
+                            <select class="input-field w-auto">
+                                <option>First Term</option>
+                                <option>Second Term</option>
+                            </select>
+                        </div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Reg. No</th>
+                                    <th>Name</th>
+                                    <th>CA Score (40)</th>
+                                    <th>Exam Score (60)</th>
+                                    <th>Total</th>
+                                    <th>Grade</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>STD2024001</td>
+                                    <td>John Doe</td>
+                                    <td><input type="number" class="input-field w-20" max="40" value="32"></td>
+                                    <td><input type="number" class="input-field w-20" max="60" value="54"></td>
+                                    <td class="font-bold">86</td>
+                                    <td class="font-bold text-green-600">A</td>
+                                </tr>
+                                <tr>
+                                    <td>STD2024002</td>
+                                    <td>Jane Smith</td>
+                                    <td><input type="number" class="input-field w-20" max="40" value="30"></td>
+                                    <td><input type="number" class="input-field w-20" max="60" value="50"></td>
+                                    <td class="font-bold">80</td>
+                                    <td class="font-bold text-green-600">A</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <button class="btn-primary mt-4" onclick="showNotification('Grades saved successfully!')">
+                            <i class="fas fa-save mr-2"></i>Save Grades
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Salary Section -->
+                <div id="teacherSection-salary" class="teacher-section" style="display: none;">
+                    <h1 class="text-3xl font-bold text-gray-800 mb-6">Salary Information</h1>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="card p-6">
+                            <h3 class="text-xl font-bold mb-4">Current Month</h3>
+                            <div class="text-center mb-6">
+                                <p class="text-gray-600">March 2024 Salary</p>
+                                <p class="text-4xl font-bold text-green-600">₦75,000.00</p>
+                                <span class="badge badge-success mt-2">Paid</span>
+                            </div>
+                            <div class="space-y-2 text-sm">
+                                <div class="flex justify-between">
+                                    <span>Basic Salary</span>
+                                    <span>₦60,000</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span>Allowance</span>
+                                    <span>₦15,000</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span>Deductions</span>
+                                    <span>₦0</span>
+                                </div>
+                                <hr class="my-2">
+                                <div class="flex justify-between font-bold">
+                                    <span>Net Pay</span>
+                                    <span>₦75,000</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card p-6">
+                            <h3 class="text-xl font-bold mb-4">Payment History</h3>
+                            <div class="space-y-3">
+                                <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                                    <div>
+                                        <p class="font-semibold">February 2024</p>
+                                        <p class="text-sm text-gray-600">Paid on Feb 28</p>
+                                    </div>
+                                    <span class="badge badge-success">₦75,000</span>
+                                </div>
+                                <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                                    <div>
+                                        <p class="font-semibold">January 2024</p>
+                                        <p class="text-sm text-gray-600">Paid on Jan 31</p>
+                                    </div>
+                                    <span class="badge badge-success">₦75,000</span>
+                                </div>
+                                <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                                    <div>
+                                        <p class="font-semibold">December 2023</p>
+                                        <p class="text-sm text-gray-600">Paid on Dec 29</p>
+                                    </div>
+                                    <span class="badge badge-success">₦75,000</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PAGE 6: BURSAR DASHBOARD -->
+    <div id="page-bursar-dashboard" class="page">
+        <div class="dashboard-grid">
+            <div class="sidebar text-white p-6">
+                <div class="mb-8 text-center">
+                    <div class="w-20 h-20 bg-white rounded-full flex items-center justify-center mx-auto mb-3">
+                        <i class="fas fa-money-check-alt text-4xl text-green-600"></i>
+                    </div>
+                    <h3 class="font-bold text-lg">Bursar Portal</h3>
+                    <p class="text-sm opacity-80">Financial Management</p>
+                </div>
+                
+                <nav>
+                    <div class="nav-item p-3 rounded-lg mb-2 flex items-center" onclick="showBursarSection('dashboard')">
+                        <i class="fas fa-home w-6"></i>
+                        <span>Dashboard</span>
+                    </div>
+                    <div class="nav-item p-3 rounded-lg mb-2 flex items-center" onclick="showBursarSection('fees')">
+                        <i class="fas fa-coins w-6"></i>
+                        <span>School Fees</span>
+                    </div>
+                    <div class="nav-item p-3 rounded-lg mb-2 flex items-center" onclick="showBursarSection('salaries')">
+                        <i class="fas fa-hand-holding-usd w-6"></i>
+                        <span>Staff Salaries</span>
+                    </div>
+                    <div class="nav-item p-3 rounded-lg mb-2 flex items-center" onclick="showBursarSection('expenses')">
+                        <i class="fas fa-file-invoice-dollar w-6"></i>
+                        <span>Expenses</span>
+                    </div>
+                    <div class="nav-item p-3 rounded-lg mb-2 flex items-center" onclick="showBursarSection('reports')">
+                        <i class="fas fa-chart-pie w-6"></i>
+                        <span>Financial Reports</span>
+                    </div>
+                    <div class="nav-item p-3 rounded-lg mb-2 flex items-center bg-white bg-opacity-20" onclick="logout()">
+                        <i class="fas fa-sign-out-alt w-6"></i>
+                        <span>Logout</span>
+                    </div>
+                </nav>
+            </div>
+
+            <div class="p-8 bg-gray-50">
+                <!-- Bursar Dashboard -->
+                <div id="bursarSection-dashboard" class="bursar-section">
+                    <h1 class="text-3xl font-bold text-gray-800 mb-6">Bursar Dashboard</h1>
+                    
+                    <div class="grid md:grid-cols-4 gap-6 mb-8">
+                        <div class="stat-card p-6 rounded-xl">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-gray-600 text-sm">Total Revenue</p>
+                                    <p class="text-2xl font-bold text-gray-800">₦2.5M</p>
+                                </div>
+                                <i class="fas fa-arrow-up text-3xl text-green-600"></i>
+                            </div>
+                        </div>
+                        <div class="stat-card p-6 rounded-xl">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-gray-600 text-sm">Total Expenses</p>
+                                    <p class="text-2xl font-bold text-gray-800">₦1.8M</p>
+                                </div>
+                                <i class="fas fa-arrow-down text-3xl text-red-500"></i>
+                            </div>
+                        </div>
+                        <div class="stat-card p-6 rounded-xl">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-gray-600 text-sm">Pending Payments</p>
+                                    <p class="text-2xl font-bold text-orange-600">₦450K</p>
+                                </div>
+                                <i class="fas fa-clock text-3xl text-orange-500"></i>
+                            </div>
+                        </div>
+                        <div class="stat-card p-6 rounded-xl">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-gray-600 text-sm">Net Balance</p>
+                                    <p class="text-2xl font-bold text-green-600">₦700K</p>
+                                </div>
+                                <i class="fas fa-wallet text-3xl text-green-600"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="card p-6">
+                            <h3 class="text-xl font-bold mb-4">Recent Transactions</h3>
+                            <div class="space-y-3">
+                                <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                                    <div>
+                                        <p class="font-semibold">School Fees Payment</p>
+                                        <p class="text-sm text-gray-600">STD2024001 - John Doe</p>
+                                    </div>
+                                    <span class="text-green-600 font-bold">+₦25,000</span>
+                                </div>
+                                <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                                    <div>
+                                        <p class="font-semibold">Staff Salary</p>
+                                        <p class="text-sm text-gray-600">TCH001 - Mr. Smith</p>
+                                    </div>
+                                    <span class="text-red-500 font-bold">-₦75,000</span>
+                                </div>
+                                <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                                    <div>
+                                        <p class="font-semibold">Stationery Purchase</p>
+                                        <p class="text-sm text-gray-600">Office Supplies</p>
+                                    </div>
+                                    <span class="text-red-500 font-bold">-₦15,000</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card p-6">
+                            <h3 class="text-xl font-bold mb-4">Fee Collection Status</h3>
+                            <div class="space-y-4">
+                                <div>
+                                    <div class="flex justify-between mb-1">
+                                        <span>First Term Fees</span>
+                                        <span>85%</span>
+                                    </div>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 85%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between mb-1">
+                                        <span>Second Term Fees</span>
+                                        <span>60%</span>
+                                    </div>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 60%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between mb-1">
+                                        <span>Third Term Fees</span>
+                                        <span>30%</span>
+                                    </div>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 30%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+<div class="card p-6 mb-6">
+    <h3 class="text-xl font-bold mb-4">Pay Salary via Bank Transfer</h3>
+    <form onsubmit="paySalaryViaTransfer(event)">
+        <div class="grid md:grid-cols-3 gap-4 mb-4">
+            <div>
+                <label class="block text-gray-700 mb-2">Select Staff</label>
+                <select class="input-field" id="salaryStaffId" required>
+                    <option value="">Select Staff</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-gray-700 mb-2">Select Bank</label>
+                <select class="input-field" id="salaryBankCode" required>
+                    <option value="">Loading banks...</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-gray-700 mb-2">Account Number</label>
+                <input type="text" class="input-field" id="salaryAccountNumber" placeholder="Enter account number" required>
+            </div>
+        </div>
+        <div class="mb-4">
+            <label class="block text-gray-700 mb-2">Account Name (will be verified)</label>
+            <input type="text" class="input-field bg-gray-100" id="salaryAccountName" readonly placeholder="Click Verify to fetch account name">
+        </div>
+        <div class="flex gap-4">
+            <button type="button" class="btn-secondary" onclick="verifyBankAccount()"><i class="fas fa-check mr-2"></i>Verify Account</button>
+            <button type="submit" class="btn-primary" id="transferSalaryBtn" disabled><i class="fas fa-paper-plane mr-2"></i>Send Salary</button>
+        </div>
+    </form>
+</div>
+                <!-- School Fees Section -->
+                <div id="bursarSection-fees" class="bursar-section" style="display: none;">
+                    <h1 class="text-3xl font-bold text-gray-800 mb-6">School Fees Management</h1>
+                    <div class="card p-6 mb-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-xl font-bold">Fee Payments</h3>
+                            <button class="btn-primary" onclick="showNotification('Export feature coming soon!')">
+                                <i class="fas fa-download mr-2"></i>Export Report
+                            </button>
+                        </div>
+                        <div class="mb-4 flex gap-4">
+                            <input type="text" placeholder="Search student..." class="input-field w-64">
+                            <select class="input-field w-auto">
+                                <option>All Classes</option>
+                                <option>Nursery</option>
+                                <option>Primary</option>
+                                <option>Junior Secondary</option>
+                                <option>Senior Secondary</option>
+                            </select>
+                            <select class="input-field w-auto">
+                                <option>All Status</option>
+                                <option>Paid</option>
+                                <option>Partial</option>
+                                <option>Unpaid</option>
+                            </select>
+                        </div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Reg. No</th>
+                                    <th>Student Name</th>
+                                    <th>Class</th>
+                                    <th>Amount Due</th>
+                                    <th>Amount Paid</th>
+                                    <th>Balance</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>STD2024001</td>
+                                    <td>John Doe</td>
+                                    <td>JSS 2A</td>
+                                    <td>₦25,000</td>
+                                    <td>₦25,000</td>
+                                    <td>₦0</td>
+                                    <td><span class="badge badge-success">Paid</span></td>
+                                    <td>
+                                        <button class="text-green-600 hover:text-green-800"><i class="fas fa-receipt"></i></button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>STD2024003</td>
+                                    <td>Mike Johnson</td>
+                                    <td>SS 1</td>
+                                    <td>₦30,000</td>
+                                    <td>₦15,000</td>
+                                    <td>₦15,000</td>
+                                    <td><span class="badge badge-warning">Partial</span></td>
+                                    <td>
+                                        <button class="text-green-600 hover:text-green-800"><i class="fas fa-receipt"></i></button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Salaries Section -->
+                <div id="bursarSection-salaries" class="bursar-section" style="display: none;">
+                    <h1 class="text-3xl font-bold text-gray-800 mb-6">Staff Salary Management</h1>
+                    <div class="card p-6 mb-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-xl font-bold">Process Salary Payments</h3>
+                            <button class="btn-primary" onclick="processAllSalaries()">
+                                <i class="fas fa-money-bill-wave mr-2"></i>Process All Salaries
+                            </button>
+                        </div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Staff ID</th>
+                                    <th>Name</th>
+                                    <th>Role</th>
+                                    <th>Basic Salary</th>
+                                    <th>Allowances</th>
+                                    <th>Deductions</th>
+                                    <th>Net Pay</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>TCH001</td>
+                                    <td>Mr. John Smith</td>
+                                    <td>Teacher</td>
+                                    <td>₦60,000</td>
+                                    <td>₦15,000</td>
+                                    <td>₦0</td>
+                                    <td>₦75,000</td>
+                                    <td><span class="badge badge-success">Paid</span></td>
+                                    <td>
+                                        <button class="btn-secondary text-sm py-1 px-3" onclick="paySalary('TCH001')">Pay</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>TCH002</td>
+                                    <td>Mrs. Jane Doe</td>
+                                    <td>Teacher</td>
+                                    <td>₦60,000</td>
+                                    <td>₦15,000</td>
+                                    <td>₦0</td>
+                                    <td>₦75,000</td>
+                                    <td><span class="badge badge-warning">Pending</span></td>
+                                    <td>
+                                        <button class="btn-primary text-sm py-1 px-3" onclick="paySalary('TCH002')">Pay</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>ADM001</td>
+                                    <td>Mr. Admin User</td>
+                                    <td>Principal</td>
+                                    <td>₦150,000</td>
+                                    <td>₦50,000</td>
+                                    <td>₦5,000</td>
+                                    <td>₦195,000</td>
+                                    <td><span class="badge badge-warning">Pending</span></td>
+                                    <td>
+                                        <button class="btn-primary text-sm py-1 px-3" onclick="paySalary('ADM001')">Pay</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Expenses Section -->
+                <div id="bursarSection-expenses" class="bursar-section" style="display: none;">
+                    <h1 class="text-3xl font-bold text-gray-800 mb-6">Expense Management</h1>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="card p-6">
+                            <h3 class="text-xl font-bold mb-4">Add New Expense</h3>
+                            <form onsubmit="addExpense(event)">
+                                <div class="mb-4">
+                                    <label class="block text-gray-700 mb-2">Expense Category</label>
+                                    <select class="input-field">
+                                        <option>Stationery</option>
+                                        <option>Utilities</option>
+                                        <option>Maintenance</option>
+                                        <option>Transportation</option>
+                                        <option>Other</option>
+                                    </select>
+                                </div>
+                                <div class="mb-4">
+                                    <label class="block text-gray-700 mb-2">Description</label>
+                                    <input type="text" class="input-field" placeholder="Enter description" required>
+                                </div>
+                                <div class="mb-4">
+                                    <label class="block text-gray-700 mb-2">Amount (₦)</label>
+                                    <input type="number" class="input-field" placeholder="Enter amount" required>
+                                </div>
+                                <div class="mb-4">
+                                    <label class="block text-gray-700 mb-2">Date</label>
+                                    <input type="date" class="input-field" required>
+                                </div>
+                                <button type="submit" class="btn-primary w-full">
+                                    <i class="fas fa-plus mr-2"></i>Add Expense
+                                </button>
+                            </form>
+                        </div>
+                        <div class="card p-6">
+                            <h3 class="text-xl font-bold mb-4">Recent Expenses</h3>
+                            <div class="space-y-3">
+                                <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                                    <div>
+                                        <p class="font-semibold">Stationery Purchase</p>
+                                        <p class="text-sm text-gray-600">Mar 01, 2024</p>
+                                    </div>
+                                    <span class="text-red-500 font-bold">-₦15,000</span>
+                                </div>
+                                <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                                    <div>
+                                        <p class="font-semibold">Electricity Bill</p>
+                                        <p class="text-sm text-gray-600">Feb 28, 2024</p>
+                                    </div>
+                                    <span class="text-red-500 font-bold">-₦45,000</span>
+                                </div>
+                                <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                                    <div>
+                                        <p class="font-semibold">Generator Fuel</p>
+                                        <p class="text-sm text-gray-600">Feb 25, 2024</p>
+                                    </div>
+                                    <span class="text-red-500 font-bold">-₦25,000</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reports Section -->
+                <div id="bursarSection-reports" class="bursar-section" style="display: none;">
+                    <h1 class="text-3xl font-bold text-gray-800 mb-6">Financial Reports</h1>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="card p-6">
+                            <h3 class="text-xl font-bold mb-4">Monthly Summary</h3>
+                            <canvas id="financeChart" width="400" height="300"></canvas>
+                        </div>
+                        <div class="card p-6">
+                            <h3 class="text-xl font-bold mb-4">Generate Report</h3>
+                            <form onsubmit="generateReport(event)">
+                                <div class="mb-4">
+                                    <label class="block text-gray-700 mb-2">Report Type</label>
+                                    <select class="input-field">
+                                        <option>Income Statement</option>
+                                        <option>Expense Report</option>
+                                        <option>Fee Collection Report</option>
+                                        <option>Salary Report</option>
+                                    </select>
+                                </div>
+                                <div class="mb-4">
+                                    <label class="block text-gray-700 mb-2">From Date</label>
+                                    <input type="date" class="input-field">
+                                </div>
+                                <div class="mb-4">
+                                    <label class="block text-gray-700 mb-2">To Date</label>
+                                    <input type="date" class="input-field">
+                                </div>
+                                <button type="submit" class="btn-primary w-full">
+                                    <i class="fas fa-file-alt mr-2"></i>Generate Report
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PAGE 7: PRINCIPAL/DIRECTOR DASHBOARD -->
+    <div id="page-admin-dashboard" class="page">
+        <div class="dashboard-grid">
+            <div class="sidebar text-white p-6">
+                <div class="mb-8 text-center">
+                    <div class="w-20 h-20 bg-white rounded-full flex items-center justify-center mx-auto mb-3">
+                        <i class="fas fa-user-tie text-4xl text-green-600"></i>
+                    </div>
+                    <h3 class="font-bold text-lg">Admin Portal</h3>
+                    <p class="text-sm opacity-80" id="adminRoleDisplay">Principal</p>
+                </div>
+                
+                <nav>
+                    <div class="nav-item p-3 rounded-lg mb-2 flex items-center" onclick="showAdminSection('dashboard')">
+                        <i class="fas fa-home w-6"></i>
+                        <span>Dashboard</span>
+                    </div>
+                    <div class="nav-item p-3 rounded-lg mb-2 flex items-center" onclick="showAdminSection('students')">
+                        <i class="fas fa-user-graduate w-6"></i>
+                        <span>All Students</span>
+                    </div>
+                    <div class="nav-item p-3 rounded-lg mb-2 flex items-center" onclick="showAdminSection('staff')">
+                        <i class="fas fa-users-cog w-6"></i>
+                        <span>Staff Management</span>
+                    </div>
+                    <div class="nav-item p-3 rounded-lg mb-2 flex items-center" onclick="showAdminSection('classes')">
+                        <i class="fas fa-chalkboard w-6"></i>
+                        <span>Classes</span>
+                    </div>
+                    <div class="nav-item p-3 rounded-lg mb-2 flex items-center" onclick="showAdminSection('exams')">
+                        <i class="fas fa-file-alt w-6"></i>
+                        <span>Exams</span>
+                    </div>
+                    <div class="nav-item p-3 rounded-lg mb-2 flex items-center" onclick="showAdminSection('announcements')">
+                        <i class="fas fa-bullhorn w-6"></i>
+                        <span>Announcements</span>
+                    </div>
+                    <div class="nav-item p-3 rounded-lg mb-2 flex items-center bg-white bg-opacity-20" onclick="logout()">
+                        <i class="fas fa-sign-out-alt w-6"></i>
+                        <span>Logout</span>
+                    </div>
+                </nav>
+            </div>
+
+            <div class="p-8 bg-gray-50">
+                <!-- Admin Dashboard -->
+                <div id="adminSection-dashboard" class="admin-section">
+                    <h1 class="text-3xl font-bold text-gray-800 mb-6">Administrative Dashboard</h1>
+                    
+                    <div class="grid md:grid-cols-4 gap-6 mb-8">
+                        <div class="stat-card p-6 rounded-xl">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-gray-600 text-sm">Total Students</p>
+                                    <p class="text-2xl font-bold text-gray-800">524</p>
+                                </div>
+                                <i class="fas fa-user-graduate text-3xl text-green-600"></i>
+                            </div>
+                        </div>
+                        <div class="stat-card p-6 rounded-xl">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-gray-600 text-sm">Total Staff</p>
+                                    <p class="text-2xl font-bold text-gray-800">48</p>
+                                </div>
+                                <i class="fas fa-users text-3xl text-green-600"></i>
+                            </div>
+                        </div>
+                        <div class="stat-card p-6 rounded-xl">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-gray-600 text-sm">Classes</p>
+                                    <p class="text-2xl font-bold text-gray-800">24</p>
+                                </div>
+                                <i class="fas fa-chalkboard text-3xl text-green-600"></i>
+                            </div>
+                        </div>
+                        <div class="stat-card p-6 rounded-xl">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-gray-600 text-sm">Attendance Today</p>
+                                    <p class="text-2xl font-bold text-green-600">96%</p>
+                                </div>
+                                <i class="fas fa-chart-line text-3xl text-green-600"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="card p-6">
+                            <h3 class="text-xl font-bold mb-4">Quick Statistics</h3>
+                            <div class="space-y-4">
+                                <div class="flex justify-between items-center">
+                                    <span>Students by Section:</span>
+                                </div>
+                                <div class="space-y-2">
+                                    <div class="flex justify-between text-sm">
+                                        <span>Nursery</span>
+                                        <span class="font-bold">45 students</span>
+                                    </div>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 9%"></div>
+                                    </div>
+                                </div>
+                                <div class="space-y-2">
+                                    <div class="flex justify-between text-sm">
+                                        <span>Primary</span>
+                                        <span class="font-bold">180 students</span>
+                                    </div>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 34%"></div>
+                                    </div>
+                                </div>
+                                <div class="space-y-2">
+                                    <div class="flex justify-between text-sm">
+                                        <span>Junior Secondary</span>
+                                        <span class="font-bold">150 students</span>
+                                    </div>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 29%"></div>
+                                    </div>
+                                </div>
+                                <div class="space-y-2">
+                                    <div class="flex justify-between text-sm">
+                                        <span>Senior Secondary</span>
+                                        <span class="font-bold">149 students</span>
+                                    </div>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 28%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card p-6">
+                            <h3 class="text-xl font-bold mb-4">Recent Activities</h3>
+                            <div class="space-y-3">
+                                <div class="flex items-start p-3 bg-gray-50 rounded-lg">
+                                    <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mr-3 mt-1">
+                                        <i class="fas fa-user-plus text-green-600 text-sm"></i>
+                                    </div>
+                                    <div>
+                                        <p class="font-semibold text-sm">New Student Registered</p>
+                                        <p class="text-xs text-gray-600">Sarah Johnson - JSS 1 (5 mins ago)</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start p-3 bg-gray-50 rounded-lg">
+                                    <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3 mt-1">
+                                        <i class="fas fa-money-bill text-blue-600 text-sm"></i>
+                                    </div>
+                                    <div>
+                                        <p class="font-semibold text-sm">Fee Payment Received</p>
+                                        <p class="text-xs text-gray-600">₦25,000 from STD2024056 (15 mins ago)</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start p-3 bg-gray-50 rounded-lg">
+                                    <div class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center mr-3 mt-1">
+                                        <i class="fas fa-clipboard-list text-purple-600 text-sm"></i>
+                                    </div>
+                                    <div>
+                                        <p class="font-semibold text-sm">Exam Results Published</p>
+                                        <p class="text-xs text-gray-600">First Term Exams - SS 3 (1 hour ago)</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Students Management -->
+                <div id="adminSection-students" class="admin-section" style="display: none;">
+                    <div class="flex justify-between items-center mb-6">
+                        <h1 class="text-3xl font-bold text-gray-800">Student Management</h1>
+                        <button class="btn-primary" onclick="showNotification('Add student form opened')">
+                            <i class="fas fa-plus mr-2"></i>Add New Student
+                        </button>
+                    </div>
+                    <div class="card p-6">
+                        <div class="mb-4 flex gap-4">
+                            <input type="text" placeholder="Search by name or reg no..." class="input-field w-64">
+                            <select class="input-field w-auto">
+                                <option>All Classes</option>
+                                <option>Nursery 1</option>
+                                <option>Nursery 2</option>
+                                <option>Primary 1-6</option>
+                                <option>JSS 1-3</option>
+                                <option>SS 1-3</option>
+                            </select>
+                        </div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Reg. No</th>
+                                    <th>Name</th>
+                                    <th>Class</th>
+                                    <th>Gender</th>
+                                    <th>Parent Contact</th>
+                                    <th>Admission Date</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>STD2024001</td>
+                                    <td>John Doe</td>
+                                    <td>JSS 2A</td>
+                                    <td>Male</td>
+                                    <td>08012345678</td>
+                                    <td>Sep 12, 2023</td>
+                                    <td><span class="badge badge-success">Active</span></td>
+                                    <td>
+                                        <button class="text-green-600 hover:text-green-800 mr-2"><i class="fas fa-eye"></i></button>
+                                        <button class="text-blue-600 hover:text-blue-800 mr-2"><i class="fas fa-edit"></i></button>
+                                        <button class="text-red-600 hover:text-red-800"><i class="fas fa-trash"></i></button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>STD2024002</td>
+                                    <td>Jane Smith</td>
+                                    <td>JSS 2A</td>
+                                    <td>Female</td>
+                                    <td>08087654321</td>
+                                    <td>Sep 12, 2023</td>
+                                    <td><span class="badge badge-success">Active</span></td>
+                                    <td>
+                                        <button class="text-green-600 hover:text-green-800 mr-2"><i class="fas fa-eye"></i></button>
+                                        <button class="text-blue-600 hover:text-blue-800 mr-2"><i class="fas fa-edit"></i></button>
+                                        <button class="text-red-600 hover:text-red-800"><i class="fas fa-trash"></i></button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Staff Management -->
+                <div id="adminSection-staff" class="admin-section" style="display: none;">
+                    <div class="flex justify-between items-center mb-6">
+                        <h1 class="text-3xl font-bold text-gray-800">Staff Management</h1>
+                        <button class="btn-primary" onclick="showNotification('Add staff form opened')">
+                            <i class="fas fa-plus mr-2"></i>Add New Staff
+                        </button>
+                    </div>
+                    <div class="card p-6">
+                        <div class="mb-4 flex gap-4">
+                            <input type="text" placeholder="Search staff..." class="input-field w-64">
+                            <select class="input-field w-auto">
+                                <option>All Roles</option>
+                                <option>Director</option>
+                                <option>Principal</option>
+                                <option>Vice Principal</option>
+                                <option>Headmaster</option>
+                                <option>Exam Officer</option>
+                                <option>Bursar</option>
+                                <option>Teacher</option>
+                            </select>
+                        </div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Staff ID</th>
+                                    <th>Name</th>
+                                    <th>Role</th>
+                                    <th>Department</th>
+                                    <th>Phone</th>
+                                    <th>Salary</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>DIR001</td>
+                                    <td>Alhaji Ibrahim</td>
+                                    <td>Director</td>
+                                    <td>Administration</td>
+                                    <td>08011111111</td>
+                                    <td>₦500,000</td>
+                                    <td><span class="badge badge-success">Active</span></td>
+                                    <td>
+                                        <button class="text-green-600 hover:text-green-800 mr-2"><i class="fas fa-eye"></i></button>
+                                        <button class="text-blue-600 hover:text-blue-800"><i class="fas fa-edit"></i></button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>PRN001</td>
+                                    <td>Dr. Mrs. Abdullahi</td>
+                                    <td>Principal</td>
+                                    <td>Administration</td>
+                                    <td>08022222222</td>
+                                    <td>₦300,000</td>
+                                    <td><span class="badge badge-success">Active</span></td>
+                                    <td>
+                                        <button class="text-green-600 hover:text-green-800 mr-2"><i class="fas fa-eye"></i></button>
+                                        <button class="text-blue-600 hover:text-blue-800"><i class="fas fa-edit"></i></button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>TCH001</td>
+                                    <td>Mr. John Smith</td>
+                                    <td>Teacher</td>
+                                    <td>Mathematics</td>
+                                    <td>08033333333</td>
+                                    <td>₦75,000</td>
+                                    <td><span class="badge badge-success">Active</span></td>
+                                    <td>
+                                        <button class="text-green-600 hover:text-green-800 mr-2"><i class="fas fa-eye"></i></button>
+                                        <button class="text-blue-600 hover:text-blue-800"><i class="fas fa-edit"></i></button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Classes Section -->
+                <div id="adminSection-classes" class="admin-section" style="display: none;">
+                    <h1 class="text-3xl font-bold text-gray-800 mb-6">Class Management</h1>
+                    <div class="grid md:grid-cols-3 gap-6">
+                        <div class="card p-6">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="text-xl font-bold">Nursery 1</h3>
+                                <span class="badge badge-success">Active</span>
+                            </div>
+                            <p class="text-gray-600 mb-2">Class Teacher: Mrs. Amina</p>
+                            <p class="text-gray-600 mb-4">Students: 22</p>
+                            <button class="btn-secondary w-full">View Details</button>
+                        </div>
+                        <div class="card p-6">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="text-xl font-bold">JSS 2A</h3>
+                                <span class="badge badge-success">Active</span>
+                            </div>
+                            <p class="text-gray-600 mb-2">Class Teacher: Mr. John</p>
+                            <p class="text-gray-600 mb-4">Students: 35</p>
+                            <button class="btn-secondary w-full">View Details</button>
+                        </div>
+                        <div class="card p-6">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="text-xl font-bold">SS 3</h3>
+                                <span class="badge badge-success">Active</span>
+                            </div>
+                            <p class="text-gray-600 mb-2">Class Teacher: Mrs. Sarah</p>
+                            <p class="text-gray-600 mb-4">Students: 42</p>
+                            <button class="btn-secondary w-full">View Details</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Exams Section -->
+                <div id="adminSection-exams" class="admin-section" style="display: none;">
+                    <h1 class="text-3xl font-bold text-gray-800 mb-6">Examination Management</h1>
+                    <div class="card p-6 mb-6">
+                        <h3 class="text-xl font-bold mb-4">Create New Exam</h3>
+                        <div class="grid md:grid-cols-4 gap-4">
+                            <input type="text" placeholder="Exam Name" class="input-field">
+                            <select class="input-field">
+                                <option>First Term</option>
+                                <option>Second Term</option>
+                                <option>Third Term</option>
+                            </select>
+                            <input type="date" class="input-field">
+                            <button class="btn-primary" onclick="showNotification('Exam created successfully!')">
+                                <i class="fas fa-plus mr-2"></i>Create Exam
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card p-6">
+                        <h3 class="text-xl font-bold mb-4">Exam Schedule</h3>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Exam Name</th>
+                                    <th>Term</th>
+                                    <th>Start Date</th>
+                                    <th>End Date</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>First Term Examination</td>
+                                    <td>First Term</td>
+                                    <td>Mar 15, 2024</td>
+                                    <td>Mar 25, 2024</td>
+                                    <td><span class="badge badge-warning">Upcoming</span></td>
+                                    <td>
+                                        <button class="text-green-600 hover:text-green-800 mr-2"><i class="fas fa-eye"></i></button>
+                                        <button class="text-blue-600 hover:text-blue-800"><i class="fas fa-edit"></i></button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Mid-Term Test</td>
+                                    <td>First Term</td>
+                                    <td>Feb 10, 2024</td>
+                                    <td>Feb 12, 2024</td>
+                                    <td><span class="badge badge-success">Completed</span></td>
+                                    <td>
+                                        <button class="text-green-600 hover:text-green-800 mr-2"><i class="fas fa-eye"></i></button>
+                                        <button class="text-blue-600 hover:text-blue-800"><i class="fas fa-edit"></i></button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Announcements Section -->
+                <div id="adminSection-announcements" class="admin-section" style="display: none;">
+                    <h1 class="text-3xl font-bold text-gray-800 mb-6">Announcements</h1>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="card p-6">
+                            <h3 class="text-xl font-bold mb-4">Create Announcement</h3>
+                            <form onsubmit="createAnnouncement(event)">
+                                <div class="mb-4">
+                                    <label class="block text-gray-700 mb-2">Title</label>
+                                    <input type="text" class="input-field" placeholder="Enter announcement title" required>
+                                </div>
+                                <div class="mb-4">
+                                    <label class="block text-gray-700 mb-2">Message</label>
+                                    <textarea class="input-field" rows="4" placeholder="Enter message..." required></textarea>
+                                </div>
+                                <div class="mb-4">
+                                    <label class="block text-gray-700 mb-2">Target Audience</label>
+                                    <select class="input-field">
+                                        <option>All</option>
+                                        <option>Students Only</option>
+                                        <option>Parents Only</option>
+                                        <option>Staff Only</option>
+                                    </select>
+                                </div>
+                                <button type="submit" class="btn-primary w-full">
+                                    <i class="fas fa-paper-plane mr-2"></i>Post Announcement
+                                </button>
+                            </form>
+                        </div>
+                        <div class="card p-6">
+                            <h3 class="text-xl font-bold mb-4">Recent Announcements</h3>
+                            <div class="space-y-4">
+                                <div class="p-4 bg-green-50 rounded-lg border-l-4 border-green-600">
+                                    <div class="flex justify-between items-start mb-2">
+                                        <h4 class="font-bold">Resumption Date</h4>
+                                        <span class="text-xs text-gray-500">2 days ago</span>
+                                    </div>
+                                    <p class="text-sm text-gray-700">School resumes on March 4th, 2024. All students are expected to be in school by 8:00 AM.</p>
+                                </div>
+                                <div class="p-4 bg-green-50 rounded-lg border-l-4 border-green-600">
+                                    <div class="flex justify-between items-start mb-2">
+                                        <h4 class="font-bold">PTA Meeting</h4>
+                                        <span class="text-xs text-gray-500">5 days ago</span>
+                                    </div>
+                                    <p class="text-sm text-gray-700">PTA meeting scheduled for March 15th at 10:00 AM in the school hall.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PAGE 8: ABOUT PAGE -->
+    <div id="page-about" class="page">
+        <div class="min-h-screen bg-gray-50">
+            <div class="bg-gradient-to-r from-green-600 to-green-700 text-white py-16">
+                <div class="container mx-auto px-6">
+                    <button onclick="showPage('home')" class="mb-4 text-white hover:text-green-200">
+                        <i class="fas fa-arrow-left mr-2"></i>Back to Home
+                    </button>
+                    <h1 class="text-4xl font-bold mb-4">About Ibra Foundation School</h1>
+                    <p class="text-xl opacity-90">Building Future Leaders Since 2009</p>
+                </div>
+            </div>
+
+            <div class="container mx-auto px-6 py-12">
+                <div class="max-w-4xl mx-auto">
+                    <div class="card p-8 mb-8">
+                        <h2 class="text-2xl font-bold mb-4 text-gray-800">Our History</h2>
+                        <p class="text-gray-600 leading-relaxed mb-4">
+                            Ibra Foundation School Mirnga was established in 2009 with a vision to provide quality education to the children of Mirnga and surrounding communities. What started as a small nursery school has grown into a comprehensive educational institution offering classes from Nursery 1 through SS 3.
+                        </p>
+                        <p class="text-gray-600 leading-relaxed">
+                            Over the years, we have maintained our commitment to academic excellence, moral values, and holistic development of every child entrusted to our care.
+                        </p>
+                    </div>
+
+                    <div class="grid md:grid-cols-2 gap-8 mb-8">
+                        <div class="card p-6">
+                            <h3 class="text-xl font-bold mb-4 text-gray-800">Our Vision</h3>
+                            <p class="text-gray-600">
+                                To be a leading educational institution that nurtures future leaders through quality education, moral values, and innovative learning.
+                            </p>
+                        </div>
+                        <div class="card p-6">
+                            <h3 class="text-xl font-bold mb-4 text-gray-800">Our Mission</h3>
+                            <p class="text-gray-600">
+                                To provide a conducive learning environment that promotes academic excellence, character development, and prepares students for higher education and life challenges.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="card p-8">
+                        <h2 class="text-2xl font-bold mb-6 text-gray-800">School Leadership</h2>
+                        <div class="grid md:grid-cols-3 gap-6">
+                            <div class="text-center">
+                                <div class="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                                    <i class="fas fa-user-tie text-4xl text-green-600"></i>
+                                </div>
+                                <h4 class="font-bold">Alhaji Ibrahim</h4>
+                                <p class="text-green-600">Director</p>
+                            </div>
+                            <div class="text-center">
+                                <div class="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                                    <i class="fas fa-user-tie text-4xl text-green-600"></i>
+                                </div>
+                                <h4 class="font-bold">Dr. Mrs. Abdullahi</h4>
+                                <p class="text-green-600">Principal</p>
+                            </div>
+                            <div class="text-center">
+                                <div class="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                                    <i class="fas fa-user-tie text-4xl text-green-600"></i>
+                                </div>
+                                <h4 class="font-bold">Mr. James</h4>
+                                <p class="text-green-600">Vice Principal</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Data Storage
+        let currentUser = null;
+        let students = JSON.parse(localStorage.getItem('students')) || [];
+        let staff = JSON.parse(localStorage.getItem('staff')) || [
+            { id: 'DIR001', name: 'Alhaji Ibrahim', role: 'Director', password: 'dir123', regNo: 'DIR001' },
+            { id: 'PRN001', name: 'Dr. Mrs. Abdullahi', role: 'Principal', password: 'prn123', regNo: 'PRN001' },
+            { id: 'VP001', name: 'Mr. James', role: 'Vice Principal', password: 'vp123', regNo: 'VP001' },
+            { id: 'HM001', name: 'Mr. Musa', role: 'Headmaster', password: 'hm123', regNo: 'HM001' },
+            { id: 'EXM001', name: 'Mrs. Grace', role: 'Exam Officer', password: 'exm123', regNo: 'EXM001' },
+            { id: 'BUR001', name: 'Mr. Accountant', role: 'Bursar', password: 'bur123', regNo: 'BUR001' },
+            { id: 'TCH001', name: 'Mr. John Smith', role: 'Teacher', password: 'tch123', regNo: 'TCH001' }
+        ];
+        let nextStudentId = parseInt(localStorage.getItem('nextStudentId')) || 2024001;
+        let nextStaffId = parseInt(localStorage.getItem('nextStaffId')) || 1;
+
+        // Page Navigation
+        function showPage(pageName) {
+            // Hide all pages
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            
+            // Show requested page
+            document.getElementById('page-' + pageName).classList.add('active');
+            
+            // Scroll to top
+            window.scrollTo(0, 0);
+        }
+
+        // Login Tab Switching
+        function switchLoginTab(type) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            const regInput = document.getElementById('loginRegNo');
+            if (type === 'student') {
+                regInput.placeholder = 'Enter Reg. No (e.g., STD2024001)';
+            } else {
+                regInput.placeholder = 'Enter Staff ID (e.g., TCH001)';
+            }
+        }
+
+        // Login Handler
+        function handleLogin(e) {
+            e.preventDefault();
+            const regNo = document.getElementById('loginRegNo').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            // Check if student
+            const student = students.find(s => s.regNo === regNo && s.password === password);
+            if (student) {
+                currentUser = { ...student, type: 'student' };
+                loadStudentDashboard();
+                showPage('student-dashboard');
+                showNotification('Welcome back, ' + student.firstName + '!');
+                return;
+            }
+            
+            // Check if staff
+            const staffMember = staff.find(s => s.regNo === regNo && s.password === password);
+            if (staffMember) {
+                currentUser = { ...staffMember, type: 'staff' };
+                
+                if (staffMember.role === 'Bursar') {
+                    showPage('bursar-dashboard');
+                } else if (['Director', 'Principal', 'Vice Principal', 'Headmaster', 'Exam Officer'].includes(staffMember.role)) {
+                    document.getElementById('adminRoleDisplay').textContent = staffMember.role;
+                    showPage('admin-dashboard');
+                } else if (staffMember.role === 'Teacher') {
+                    document.getElementById('teacherNameDisplay').textContent = 'Welcome, ' + staffMember.name;
+                    showPage('teacher-dashboard');
+                }
+                showNotification('Welcome back, ' + staffMember.name + '!');
+                return;
+            }
+            
+            showNotification('Invalid credentials! Please try again.');
+        }
+
+        // Student Dashboard Functions
+        function loadStudentDashboard() {
+            document.getElementById('studentNameDisplay').textContent = 'Welcome, ' + currentUser.firstName;
+            document.getElementById('dashboardRegNo').textContent = currentUser.regNo;
+            document.getElementById('dashboardClass').textContent = currentUser.class;
+            
+            // Profile
+            document.getElementById('profileName').textContent = currentUser.surname + ' ' + currentUser.firstName;
+            document.getElementById('profileClass').textContent = currentUser.class;
+            document.getElementById('profileRegNo').textContent = currentUser.regNo;
+            document.getElementById('profileDOB').textContent = currentUser.dob;
+            document.getElementById('profileGender').textContent = currentUser.gender;
+            document.getElementById('profileAddress').textContent = currentUser.address;
+            document.getElementById('profileParent').textContent = currentUser.parentName;
+            document.getElementById('profilePhone').textContent = currentUser.parentPhone;
+            document.getElementById('profileEmail').textContent = currentUser.parentEmail || 'N/A';
+        }
+
+        function showStudentSection(section) {
+            document.querySelectorAll('.student-section').forEach(s => s.style.display = 'none');
+            document.getElementById('studentSection-' + section).style.display = 'block';
+        }
+
+        function makePayment(e) {
+            e.preventDefault();
+            showNotification('Payment processed successfully! Receipt generated.');
+            document.getElementById('paymentAmount').value = '';
+        }
+
+        // Teacher Dashboard Functions
+        function showTeacherSection(section) {
+            document.querySelectorAll('.teacher-section').forEach(s => s.style.display = 'none');
+            document.getElementById('teacherSection-' + section).style.display = 'block';
+        }
+
+        function paySalary(staffId) {
+            showNotification('Salary payment processed for ' + staffId);
+        }
+
+        function processAllSalaries() {
+            showNotification('All pending salaries have been processed!');
+        }
+
+        // Bursar Dashboard Functions
+        function showBursarSection(section) {
+            document.querySelectorAll('.bursar-section').forEach(s => s.style.display = 'none');
+            document.getElementById('bursarSection-' + section).style.display = 'block';
+        }
+
+        function addExpense(e) {
+            e.preventDefault();
+            showNotification('Expense added successfully!');
+            e.target.reset();
+        }
+
+        function generateReport(e) {
+            e.preventDefault();
+            showNotification('Report generated successfully! Download started.');
+        }
+
+        // Admin Dashboard Functions
+        function showAdminSection(section) {
+            document.querySelectorAll('.admin-section').forEach(s => s.style.display = 'none');
+            document.getElementById('adminSection-' + section).style.display = 'block';
+        }
+
+        function createAnnouncement(e) {
+            e.preventDefault();
+            showNotification('Announcement posted successfully!');
+            e.target.reset();
+        }
+
+        // Admission Functions
+        let tempAdmissionData = null;
+
+        function submitAdmission(e) {
+            e.preventDefault();
+            
+            tempAdmissionData = {
+                surname: document.getElementById('admSurname').value,
+                firstName: document.getElementById('admFirstName').value,
+                otherNames: document.getElementById('admOtherNames').value,
+                dob: document.getElementById('admDOB').value,
+                gender: document.getElementById('admGender').value,
+                class: document.getElementById('admClass').value,
+                parentName: document.getElementById('admParentName').value,
+                parentPhone: document.getElementById('admParentPhone').value,
+                parentEmail: document.getElementById('admParentEmail').value,
+                address: document.getElementById('admAddress').value
+            };
+            
+            document.getElementById('admissionStep1').style.display = 'none';
+            document.getElementById('admissionStep2').style.display = 'block';
+            document.getElementById('step2Indicator').style.opacity = '1';
+        }
+
+        function completeAdmission() {
+            if (!document.getElementById('paymentReceipt').value) {
+                showNotification('Please upload payment receipt!');
+                return;
+            }
+            
+            // Generate Registration Number
+            const regNo = 'STD' + nextStudentId;
+            nextStudentId++;
+            localStorage.setItem('nextStudentId', nextStudentId);
+            
+            // Save student
+            const newStudent = {
+                ...tempAdmissionData,
+                regNo: regNo,
+                password: regNo, // Default password is reg number
+                id: Date.now()
+            };
+            
+            students.push(newStudent);
+            localStorage.setItem('students', JSON.stringify(students));
+            
+            // Show success
+            document.getElementById('admissionStep2').style.display = 'none';
+            document.getElementById('admissionSuccess').style.display = 'block';
+            document.getElementById('generatedRegNo').textContent = regNo;
+            
+            showNotification('Registration completed successfully!');
+        }
+
+        // Notification System
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            document.getElementById('notificationText').textContent = message;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // Logout
+        function logout() {
+            currentUser = null;
+            showPage('home');
+            showNotification('Logged out successfully!');
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add some sample students if none exist
+            if (students.length === 0) {
+                students.push({
+                    regNo: 'STD2024001',
+                    password: 'STD2024001',
+                    surname: 'Doe',
+                    firstName: 'John',
+                    otherNames: '',
+                    dob: '2010-05-15',
+                    gender: 'Male',
+                    class: 'JSS 2A',
+                    parentName: 'Mr. Doe',
+                    parentPhone: '08012345678',
+                    parentEmail: 'parent@email.com',
+                    address: 'Mirnga, Nigeria'
+                });
+                localStorage.setItem('students', JSON.stringify(students));
+            }
+        });
+        async function loadBanks() {
+    try {
+        const result = await apiCall('get_banks');
+        const select = document.getElementById('salaryBankCode');
+        select.innerHTML = '<option value="">Select Bank</option>';
+        
+        if (result.status && result.data) {
+            result.data.forEach(bank => {
+                select.innerHTML += `<option value="${bank.code}">${bank.name}</option>`;
+            });
+        }
+    } catch (error) {
+        console.error('Failed to load banks');
+    }
+}
+
+async function verifyBankAccount() {
+    const accountNumber = document.getElementById('salaryAccountNumber').value;
+    const bankCode = document.getElementById('salaryBankCode').value;
+    
+    if (!accountNumber || !bankCode) {
+        showNotification('Please enter account number and select bank', 'error');
+        return;
+    }
+    
+    try {
+        const result = await apiCall('resolve_account', 'GET', {
+            account_number: accountNumber,
+            bank_code: bankCode
+        });
+        
+        if (result.status && result.data) {
+            document.getElementById('salaryAccountName').value = result.data.account_name;
+            document.getElementById('transferSalaryBtn').disabled = false;
+            showNotification('Account verified successfully');
+        } else {
+            showNotification('Could not verify account', 'error');
+        }
+    } catch (error) {
+        showNotification('Account verification failed', 'error');
+    }
+}
+
+async function paySalaryViaTransfer(e) {
+    e.preventDefault();
+    const btn = document.getElementById('transferSalaryBtn');
+    btn.innerHTML = '<span class="loading"></span> Processing...';
+    btn.disabled = true;
+    
+    try {
+        const result = await apiCall('initialize_salary_transfer', 'POST', {
+            staff_id: document.getElementById('salaryStaffId').value,
+            amount: document.getElementById('salaryAmount').value,
+            bank_code: document.getElementById('salaryBankCode').value,
+            account_number: document.getElementById('salaryAccountNumber').value,
+            narration: 'Salary Payment - ' + new Date().toLocaleDateString()
+        });
+        
+        if (result.success) {
+            showNotification('Transfer initiated. Check staff account.');
+        } else {
+            showNotification(result.message, 'error');
+        }
+    } finally {
+        btn.innerHTML = '<i class="fas fa-paper-plane mr-2"></i>Send Salary';
+        btn.disabled = false;
+    }
+}
+    </script>
+</body>
+</html>
