@@ -33,7 +33,7 @@
         .mobile-menu.active { transform: translateX(0); }
         .fade-in { animation: fadeIn 0.5s ease-in; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        .gradient-text { background: linear-gradient(135deg, #006400, #228B22); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .gradient-text { background: linear-gradient(135deg, #006400, #228B22); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent;}
         .btn-primary { background: linear-gradient(135deg, #006400, #228B22); color: white; transition: all 0.3s; }
         .btn-primary:hover { transform: scale(1.05); box-shadow: 0 10px 20px rgba(0, 100, 0, 0.3); }
         .input-field { border: 2px solid #e5e7eb; transition: all 0.3s; }
@@ -897,6 +897,119 @@
                 classTransfers();
             }
         }
+        // ==================== VICE PRINCIPAL DASHBOARD ====================
+function loadVicePrincipalDashboard() {
+    setPageTitle('Vice Principal Dashboard');
+    document.getElementById('mainContent').innerHTML = `
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="glass rounded-xl p-6 card-hover">
+                <h3 class="text-lg font-bold text-primary mb-2">Student Attendance</h3>
+                <p class="text-3xl font-bold">Manage</p>
+                <p class="text-sm text-gray-500">Daily attendance tracking</p>
+            </div>
+            <div class="glass rounded-xl p-6 card-hover">
+                <h3 class="text-lg font-bold text-primary mb-2">Discipline</h3>
+                <p class="text-3xl font-bold">Records</p>
+                <p class="text-sm text-gray-500">Student discipline management</p>
+            </div>
+            <div class="glass rounded-xl p-6 card-hover">
+                <h3 class="text-lg font-bold text-primary mb-2">Timetable</h3>
+                <p class="text-3xl font-bold">View/Edit</p>
+                <p class="text-sm text-gray-500">Class schedules</p>
+            </div>
+        </div>
+        
+        <div class="grid md:grid-cols-2 gap-6">
+            <button onclick="studentAttendance()" class="glass rounded-xl p-6 card-hover text-left">
+                <i class="fas fa-user-check text-4xl text-primary mb-4"></i>
+                <h3 class="text-xl font-bold mb-2">Student Attendance</h3>
+                <p class="text-gray-600">Track daily student attendance</p>
+            </button>
+            <button onclick="disciplineRecords()" class="glass rounded-xl p-6 card-hover text-left">
+                <i class="fas fa-clipboard-list text-4xl text-secondary mb-4"></i>
+                <h3 class="text-xl font-bold mb-2">Discipline Records</h3>
+                <p class="text-gray-600">Manage student conduct records</p>
+            </button>
+        </div>
+    `;
+}
+
+// ==================== HEADMASTER DASHBOARD ====================
+function loadHeadmasterDashboard() {
+    setPageTitle('Headmaster Dashboard');
+    document.getElementById('mainContent').innerHTML = `
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="glass rounded-xl p-6 card-hover">
+                <h3 class="text-lg font-bold text-primary mb-2">Primary Section</h3>
+                <p class="text-3xl font-bold">Manage</p>
+                <p class="text-sm text-gray-500">Primary school operations</p>
+            </div>
+            <div class="glass rounded-xl p-6 card-hover">
+                <h3 class="text-lg font-bold text-primary mb-2">Attendance</h3>
+                <p class="text-3xl font-bold">Track</p>
+                <p class="text-sm text-gray-500">Section attendance overview</p>
+            </div>
+            <div class="glass rounded-xl p-6 card-hover">
+                <h3 class="text-lg font-bold text-primary mb-2">Teachers</h3>
+                <p class="text-3xl font-bold">Manage</p>
+                <p class="text-sm text-gray-500">Class teacher assignments</p>
+            </div>
+        </div>
+    `;
+}
+
+// ==================== EXAM OFFICER DASHBOARD ====================
+function loadExamOfficerDashboard() {
+    setPageTitle('Exam Officer Dashboard');
+    document.getElementById('mainContent').innerHTML = `
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="glass rounded-xl p-6 card-hover">
+                <h3 class="text-lg font-bold text-primary mb-2">Exam Schedule</h3>
+                <p class="text-3xl font-bold">Create</p>
+                <p class="text-sm text-gray-500">Timetable and scheduling</p>
+            </div>
+            <div class="glass rounded-xl p-6 card-hover">
+                <h3 class="text-lg font-bold text-primary mb-2">Results</h3>
+                <p class="text-3xl font-bold">Analyze</p>
+                <p class="text-sm text-gray-500">Performance analytics</p>
+            </div>
+            <div class="glass rounded-xl p-6 card-hover">
+                <h3 class="text-lg font-bold text-primary mb-2">Transcripts</h3>
+                <p class="text-3xl font-bold">Generate</p>
+                <p class="text-sm text-gray-500">Student academic records</p>
+            </div>
+        </div>
+    `;
+}
+
+// Stub functions for sidebar menu items
+function studentAttendance() { alert('Student attendance - To be implemented'); }
+function disciplineRecords() { alert('Discipline records - To be implemented'); }
+function manageTimetable() { alert('Timetable - To be implemented'); }
+function manageAssignments() { alert('Assignments - To be implemented'); }
+function primarySection() { alert('Primary section - To be implemented'); }
+function sectionAttendance() { alert('Section attendance - To be implemented'); }
+function manageCurriculum() { alert('Curriculum - To be implemented'); }
+function manageClassTeachers() { alert('Class teachers - To be implemented'); }
+function examSchedule() { alert('Exam schedule - To be implemented'); }
+function resultsAnalysis() { alert('Results analysis - To be implemented'); }
+function exportResults() { alert('Export results - To be implemented'); }
+function manageTranscripts() { alert('Transcripts - To be implemented'); }
+function financialReports() { alert('Financial reports - To be implemented'); }
+function schoolStats() { alert('School statistics - To be implemented'); }
+function settings() { alert('Settings - To be implemented'); }
+function academicCalendar() { alert('Academic calendar - To be implemented'); }
+function viewReports() { alert('View reports - To be implemented'); }
+function manageBudget() { alert('Budget - To be implemented'); }
+function paymentHistory() { alert('Payment history - To be implemented'); }
+function myTimetable() { alert('My timetable - To be implemented'); }
+function printMyReport() { alert('Print report - To be implemented'); }
+function takeAttendance() { alert('Take attendance - To be implemented'); }
+function lessonNotes() { alert('Lesson notes - To be implemented'); }
+function myStudents() { alert('My students - To be implemented'); }
+function myProfile() { alert('My profile - To be implemented'); }
+function manageInvoices() { alert('Invoices - To be implemented'); }
+function classTransfers() { classTransfers(); } // This exists
 
         // ==================== BURSARY DASHBOARD ====================
         function loadBursaryDashboard() {
