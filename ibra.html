@@ -17,6 +17,7 @@
                         accent: '#90EE90',
                         white: '#FFFFFF',
                         offwhite: '#F8FFF8',
+                        gold: '#FFD700',
                     }
                 }
             }
@@ -24,7 +25,7 @@
     </script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0fdf4; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); min-height: 100vh; }
         .glass { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
         .card-hover { transition: all 0.3s ease; }
         .card-hover:hover { transform: translateY(-5px); box-shadow: 0 20px 40px rgba(0, 100, 0, 0.15); }
@@ -33,9 +34,11 @@
         .mobile-menu.active { transform: translateX(0); }
         .fade-in { animation: fadeIn 0.5s ease-in; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        .gradient-text { background: linear-gradient(135deg, #006400, #228B22); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent;}
+        .gradient-text { background: linear-gradient(135deg, #006400, #228B22); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
         .btn-primary { background: linear-gradient(135deg, #006400, #228B22); color: white; transition: all 0.3s; }
         .btn-primary:hover { transform: scale(1.05); box-shadow: 0 10px 20px rgba(0, 100, 0, 0.3); }
+        .btn-secondary { background: linear-gradient(135deg, #228B22, #90EE90); color: white; transition: all 0.3s; }
+        .btn-secondary:hover { transform: scale(1.05); box-shadow: 0 10px 20px rgba(34, 139, 34, 0.3); }
         .input-field { border: 2px solid #e5e7eb; transition: all 0.3s; }
         .input-field:focus { border-color: #006400; outline: none; box-shadow: 0 0 0 3px rgba(0, 100, 0, 0.1); }
         .table-header { background: linear-gradient(135deg, #006400, #228B22); color: white; }
@@ -55,44 +58,614 @@
         .calendar-day:hover { background: #f0fdf4; }
         .progress-bar { background: #e5e7eb; border-radius: 10px; overflow: hidden; }
         .progress-fill { background: linear-gradient(90deg, #006400, #228B22); height: 100%; transition: width 0.3s; }
+        .portal-card { transition: all 0.3s ease; cursor: pointer; }
+        .portal-card:hover { transform: translateY(-10px); box-shadow: 0 25px 50px rgba(0, 100, 0, 0.2); }
+        .nav-link { position: relative; }
+        .nav-link::after { content: ''; position: absolute; width: 0; height: 2px; bottom: -4px; left: 0; background: #006400; transition: width 0.3s; }
+        .nav-link:hover::after { width: 100%; }
+        .dropdown:hover .dropdown-menu { display: block; }
+        .modal { background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(5px); }
+        .toast { animation: slideIn 0.3s ease-out; }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
     </style>
 </head>
 <body class="bg-offwhite text-gray-800">
 
-    <!-- Login Page -->
-    <div id="loginPage" class="min-h-screen flex items-center justify-center p-4">
-        <div class="glass rounded-2xl shadow-2xl p-8 w-full max-w-md border-t-4 border-primary">
-            <div class="text-center mb-8">
-                <div class="w-24 h-24 bg-gradient-to-br from-primary to-secondary rounded-full mx-auto mb-4 flex items-center justify-center text-white text-3xl font-bold shadow-lg">
-                    <i class="fas fa-graduation-cap"></i>
+    <!-- Landing Page / Portal Selector -->
+    <div id="landingPage" class="min-h-screen flex flex-col">
+        <!-- Navigation Header -->
+        <nav class="bg-white shadow-lg sticky top-0 z-50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between h-20">
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center text-white text-xl font-bold mr-3">
+                            <i class="fas fa-graduation-cap"></i>
+                        </div>
+                        <div>
+                            <h1 class="text-2xl font-bold gradient-text">Ibra Foundation School</h1>
+                            <p class="text-sm text-primary font-semibold">Mirnga</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Desktop Navigation -->
+                    <div class="hidden md:flex items-center space-x-8">
+                        <a href="#" onclick="showAboutUs()" class="nav-link text-gray-700 hover:text-primary font-medium">About Us</a>
+                        <a href="#" onclick="showAcademics()" class="nav-link text-gray-700 hover:text-primary font-medium">Academics</a>
+                        <a href="#" onclick="showAdmissions()" class="nav-link text-gray-700 hover:text-primary font-medium">Admissions</a>
+                        <a href="#" onclick="showContact()" class="nav-link text-gray-700 hover:text-primary font-medium">Contact</a>
+                        <div class="dropdown relative">
+                            <button class="btn-primary px-6 py-2 rounded-full font-semibold">
+                                <i class="fas fa-sign-in-alt mr-2"></i>Login
+                            </button>
+                            <div class="dropdown-menu hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-100">
+                                <a href="#" onclick="showStudentLogin()" class="block px-4 py-2 hover:bg-green-50 text-gray-700">Student Portal</a>
+                                <a href="#" onclick="showStaffLogin()" class="block px-4 py-2 hover:bg-green-50 text-gray-700">Staff Portal</a>
+                                <a href="#" onclick="showAdminLogin()" class="block px-4 py-2 hover:bg-green-50 text-gray-700">Admin Portal</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Mobile menu button -->
+                    <div class="md:hidden flex items-center">
+                        <button onclick="toggleMobileNav()" class="text-gray-700 hover:text-primary focus:outline-none">
+                            <i class="fas fa-bars text-2xl"></i>
+                        </button>
+                    </div>
                 </div>
-                <h1 class="text-2xl font-bold gradient-text">Ibra Foundation School</h1>
-                <p class="text-primary font-semibold">Mirnga</p>
-                <div class="motto-banner mt-3 rounded-lg text-sm">"Knowledge is Light"</div>
+            </div>
+
+            <!-- Mobile Navigation -->
+            <div id="mobileNav" class="hidden md:hidden bg-white border-t">
+                <div class="px-4 pt-2 pb-4 space-y-1">
+                    <a href="#" onclick="showAboutUs()" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-green-50">About Us</a>
+                    <a href="#" onclick="showAcademics()" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-green-50">Academics</a>
+                    <a href="#" onclick="showAdmissions()" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-green-50">Admissions</a>
+                    <a href="#" onclick="showContact()" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-green-50">Contact</a>
+                    <div class="border-t pt-2 mt-2">
+                        <p class="px-3 text-xs font-semibold text-gray-500 uppercase">Login Portals</p>
+                        <a href="#" onclick="showStudentLogin()" class="block px-3 py-2 rounded-md text-base font-medium text-primary hover:bg-green-50">Student Portal</a>
+                        <a href="#" onclick="showStaffLogin()" class="block px-3 py-2 rounded-md text-base font-medium text-primary hover:bg-green-50">Staff Portal</a>
+                        <a href="#" onclick="showAdminLogin()" class="block px-3 py-2 rounded-md text-base font-medium text-primary hover:bg-green-50">Admin Portal</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Hero Section -->
+        <div class="flex-1 flex items-center justify-center p-4 relative overflow-hidden">
+            <div class="absolute inset-0 opacity-10">
+                <div class="absolute top-0 left-0 w-96 h-96 bg-primary rounded-full mix-blend-multiply filter blur-3xl animate-blob"></div>
+                <div class="absolute top-0 right-0 w-96 h-96 bg-secondary rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-2000"></div>
+                <div class="absolute -bottom-32 left-20 w-96 h-96 bg-accent rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-4000"></div>
+            </div>
+
+            <div class="max-w-7xl mx-auto w-full relative z-10">
+                <div class="text-center mb-12">
+                    <div class="motto-banner inline-block rounded-full px-6 py-2 mb-6 text-sm font-semibold tracking-wide">
+                        <i class="fas fa-star mr-2"></i>"Knowledge is Light"<i class="fas fa-star ml-2"></i>
+                    </div>
+                    <h2 class="text-4xl md:text-6xl font-bold text-gray-800 mb-4">Welcome to Excellence</h2>
+                    <p class="text-xl text-gray-600 max-w-2xl mx-auto">Nurturing minds, building futures, and creating leaders of tomorrow through quality education.</p>
+                </div>
+
+                <!-- Portal Cards -->
+                <div class="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+                    <!-- Student Portal -->
+                    <div onclick="showStudentLogin()" class="portal-card glass rounded-2xl p-8 text-center border-t-4 border-blue-500">
+                        <div class="w-20 h-20 bg-blue-100 rounded-full mx-auto mb-4 flex items-center justify-center text-blue-600 text-3xl">
+                            <i class="fas fa-user-graduate"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-gray-800 mb-2">Student Portal</h3>
+                        <p class="text-gray-600 mb-6">Access your results, pay fees, view timetable, and manage your academic profile.</p>
+                        <button class="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition">
+                            Login as Student <i class="fas fa-arrow-right ml-2"></i>
+                        </button>
+                        <p class="mt-4 text-sm text-gray-500">New student? <a href="#" onclick="showAdmissionForm()" class="text-blue-600 font-semibold hover:underline">Apply for Admission</a></p>
+                    </div>
+
+                    <!-- Staff Portal -->
+                    <div onclick="showStaffLogin()" class="portal-card glass rounded-2xl p-8 text-center border-t-4 border-secondary">
+                        <div class="w-20 h-20 bg-green-100 rounded-full mx-auto mb-4 flex items-center justify-center text-secondary text-3xl">
+                            <i class="fas fa-chalkboard-teacher"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-gray-800 mb-2">Staff Portal</h3>
+                        <p class="text-gray-600 mb-6">For Teachers, Bursary, Exam Officers, and other staff members.</p>
+                        <button class="w-full btn-secondary py-3 rounded-lg font-semibold">
+                            Login as Staff <i class="fas fa-arrow-right ml-2"></i>
+                        </button>
+                        <p class="mt-4 text-sm text-gray-500">Contact admin for account issues</p>
+                    </div>
+
+                    <!-- Admin Portal -->
+                    <div onclick="showAdminLogin()" class="portal-card glass rounded-2xl p-8 text-center border-t-4 border-primary">
+                        <div class="w-20 h-20 bg-green-100 rounded-full mx-auto mb-4 flex items-center justify-center text-primary text-3xl">
+                            <i class="fas fa-user-shield"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-gray-800 mb-2">Admin Portal</h3>
+                        <p class="text-gray-600 mb-6">For Directors, Principals, Vice Principals, and Headmasters.</p>
+                        <button class="w-full btn-primary py-3 rounded-lg font-semibold">
+                            Login as Admin <i class="fas fa-arrow-right ml-2"></i>
+                        </button>
+                        <p class="mt-4 text-sm text-gray-500">Restricted access only</p>
+                    </div>
+                </div>
+
+                <!-- Quick Stats -->
+                <div class="mt-16 grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto">
+                    <div class="text-center">
+                        <p class="text-3xl font-bold text-primary">500+</p>
+                        <p class="text-sm text-gray-600">Students</p>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-3xl font-bold text-secondary">50+</p>
+                        <p class="text-sm text-gray-600">Staff Members</p>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-3xl font-bold text-primary">15+</p>
+                        <p class="text-sm text-gray-600">Years of Excellence</p>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-3xl font-bold text-secondary">98%</p>
+                        <p class="text-sm text-gray-600">Success Rate</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="bg-white border-t mt-12">
+            <div class="max-w-7xl mx-auto px-4 py-6 flex flex-col md:flex-row justify-between items-center">
+                <p class="text-gray-600 text-sm">&copy; 2024 Ibra Foundation School Mirnga. All rights reserved.</p>
+                <div class="flex space-x-4 mt-4 md:mt-0">
+                    <a href="#" class="text-gray-400 hover:text-primary"><i class="fab fa-facebook"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-primary"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-primary"><i class="fab fa-instagram"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-primary"><i class="fas fa-envelope"></i></a>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- About Us Page -->
+    <div id="aboutUsPage" class="hidden min-h-screen bg-offwhite">
+        <div class="bg-white shadow-sm sticky top-0 z-40">
+            <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+                <button onclick="showLanding()" class="text-primary hover:text-secondary font-semibold">
+                    <i class="fas fa-arrow-left mr-2"></i>Back to Home
+                </button>
+                <h2 class="text-2xl font-bold text-primary">About Us</h2>
+                <div class="w-24"></div>
+            </div>
+        </div>
+        
+        <div class="max-w-6xl mx-auto p-6">
+            <div class="glass rounded-2xl p-8 mb-8">
+                <div class="grid md:grid-cols-2 gap-8 items-center">
+                    <div>
+                        <h3 class="text-3xl font-bold text-primary mb-4">Our History</h3>
+                        <p class="text-gray-600 mb-4 leading-relaxed">
+                            Founded in 2009, Ibra Foundation School Mirnga has been a beacon of educational excellence in the community. 
+                            Starting with just 50 students and 5 teachers, we have grown into a comprehensive institution serving 
+                            over 500 students from Nursery to Senior Secondary School.
+                        </p>
+                        <p class="text-gray-600 leading-relaxed">
+                            Our name honors the legacy of educational philanthropy, and our motto "Knowledge is Light" guides 
+                            everything we do. We are committed to providing quality, affordable education that prepares 
+                            students for global citizenship.
+                        </p>
+                    </div>
+                    <div class="bg-gradient-to-br from-primary to-secondary rounded-2xl p-8 text-white text-center">
+                        <i class="fas fa-school text-6xl mb-4 opacity-80"></i>
+                        <h4 class="text-2xl font-bold mb-2">Ibra Foundation School</h4>
+                        <p class="text-lg italic">"Knowledge is Light"</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-6 mb-8">
+                <div class="glass rounded-xl p-6 text-center card-hover">
+                    <i class="fas fa-bullseye text-4xl text-primary mb-4"></i>
+                    <h4 class="text-xl font-bold mb-2">Our Mission</h4>
+                    <p class="text-gray-600 text-sm">To provide holistic education that develops academic excellence, moral values, and leadership skills.</p>
+                </div>
+                <div class="glass rounded-xl p-6 text-center card-hover">
+                    <i class="fas fa-eye text-4xl text-secondary mb-4"></i>
+                    <h4 class="text-xl font-bold mb-2">Our Vision</h4>
+                    <p class="text-gray-600 text-sm">To be the leading educational institution in the region, producing future leaders and change-makers.</p>
+                </div>
+                <div class="glass rounded-xl p-6 text-center card-hover">
+                    <i class="fas fa-heart text-4xl text-red-500 mb-4"></i>
+                    <h4 class="text-xl font-bold mb-2">Our Values</h4>
+                    <p class="text-gray-600 text-sm">Integrity, Excellence, Discipline, Innovation, and Community Service.</p>
+                </div>
+            </div>
+
+            <div class="glass rounded-2xl p-8">
+                <h3 class="text-2xl font-bold text-primary mb-6">Leadership Team</h3>
+                <div class="grid md:grid-cols-4 gap-6">
+                    <div class="text-center">
+                        <div class="w-24 h-24 bg-gradient-to-br from-primary to-secondary rounded-full mx-auto mb-3 flex items-center justify-center text-white text-2xl font-bold">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <h4 class="font-bold">Alhaji Ibrahim</h4>
+                        <p class="text-sm text-gray-600">Director</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="w-24 h-24 bg-gradient-to-br from-primary to-secondary rounded-full mx-auto mb-3 flex items-center justify-center text-white text-2xl font-bold">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <h4 class="font-bold">Dr. Mrs. Aisha</h4>
+                        <p class="text-sm text-gray-600">Principal</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="w-24 h-24 bg-gradient-to-br from-primary to-secondary rounded-full mx-auto mb-3 flex items-center justify-center text-white text-2xl font-bold">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <h4 class="font-bold">Mr. John Doe</h4>
+                        <p class="text-sm text-gray-600">Vice Principal</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="w-24 h-24 bg-gradient-to-br from-primary to-secondary rounded-full mx-auto mb-3 flex items-center justify-center text-white text-2xl font-bold">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <h4 class="font-bold">Mrs. Sarah Smith</h4>
+                        <p class="text-sm text-gray-600">Headmaster</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Academics Page -->
+    <div id="academicsPage" class="hidden min-h-screen bg-offwhite">
+        <div class="bg-white shadow-sm sticky top-0 z-40">
+            <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+                <button onclick="showLanding()" class="text-primary hover:text-secondary font-semibold">
+                    <i class="fas fa-arrow-left mr-2"></i>Back to Home
+                </button>
+                <h2 class="text-2xl font-bold text-primary">Academics</h2>
+                <div class="w-24"></div>
+            </div>
+        </div>
+        
+        <div class="max-w-6xl mx-auto p-6">
+            <div class="grid md:grid-cols-3 gap-6 mb-8">
+                <div class="glass rounded-xl p-6 card-hover">
+                    <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 text-2xl mb-4">
+                        <i class="fas fa-baby"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-primary mb-2">Nursery Section</h3>
+                    <p class="text-gray-600 text-sm mb-4">Ages 3-5 years. Foundation stage with play-based learning.</p>
+                    <ul class="text-sm text-gray-600 space-y-1">
+                        <li><i class="fas fa-check text-primary mr-2"></i>Nursery 1 & 2</li>
+                        <li><i class="fas fa-check text-primary mr-2"></i>Early literacy & numeracy</li>
+                        <li><i class="fas fa-check text-primary mr-2"></i>Creative arts & play</li>
+                    </ul>
+                </div>
+                <div class="glass rounded-xl p-6 card-hover">
+                    <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center text-secondary text-2xl mb-4">
+                        <i class="fas fa-child"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-primary mb-2">Primary Section</h3>
+                    <p class="text-gray-600 text-sm mb-4">Ages 6-11 years. Comprehensive primary education.</p>
+                    <ul class="text-sm text-gray-600 space-y-1">
+                        <li><i class="fas fa-check text-primary mr-2"></i>Primary 1 - 6</li>
+                        <li><i class="fas fa-check text-primary mr-2"></i>Core subjects + ICT</li>
+                        <li><i class="fas fa-check text-primary mr-2"></i>Sports & extracurriculars</li>
+                    </ul>
+                </div>
+                <div class="glass rounded-xl p-6 card-hover">
+                    <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center text-purple-600 text-2xl mb-4">
+                        <i class="fas fa-user-graduate"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-primary mb-2">Secondary Section</h3>
+                    <p class="text-gray-600 text-sm mb-4">Ages 12-17 years. Junior & Senior Secondary.</p>
+                    <ul class="text-sm text-gray-600 space-y-1">
+                        <li><i class="fas fa-check text-primary mr-2"></i>JSS 1 - 3 & SSS 1 - 3</li>
+                        <li><i class="fas fa-check text-primary mr-2"></i>Science, Arts & Commercial</li>
+                        <li><i class="fas fa-check text-primary mr-2"></i>WAEC & NECO preparation</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="glass rounded-2xl p-8 mb-8">
+                <h3 class="text-2xl font-bold text-primary mb-6">Our Curriculum</h3>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div>
+                        <h4 class="font-semibold text-lg mb-3">Core Subjects</h4>
+                        <div class="grid grid-cols-2 gap-2 text-sm">
+                            <span class="bg-green-50 px-3 py-2 rounded-lg">English Language</span>
+                            <span class="bg-green-50 px-3 py-2 rounded-lg">Mathematics</span>
+                            <span class="bg-green-50 px-3 py-2 rounded-lg">Basic Science</span>
+                            <span class="bg-green-50 px-3 py-2 rounded-lg">Social Studies</span>
+                            <span class="bg-green-50 px-3 py-2 rounded-lg">Civic Education</span>
+                            <span class="bg-green-50 px-3 py-2 rounded-lg">ICT/Computer</span>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-lg mb-3">Elective Subjects (SSS)</h4>
+                        <div class="grid grid-cols-2 gap-2 text-sm">
+                            <span class="bg-blue-50 px-3 py-2 rounded-lg">Physics</span>
+                            <span class="bg-blue-50 px-3 py-2 rounded-lg">Chemistry</span>
+                            <span class="bg-blue-50 px-3 py-2 rounded-lg">Biology</span>
+                            <span class="bg-blue-50 px-3 py-2 rounded-lg">Economics</span>
+                            <span class="bg-blue-50 px-3 py-2 rounded-lg">Government</span>
+                            <span class="bg-blue-50 px-3 py-2 rounded-lg">Literature</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass rounded-2xl p-8">
+                <h3 class="text-2xl font-bold text-primary mb-6">Academic Calendar 2024/2025</h3>
+                <div class="space-y-4">
+                    <div class="flex items-center p-4 bg-green-50 rounded-lg">
+                        <div class="w-12 h-12 bg-primary rounded-lg flex items-center justify-center text-white font-bold mr-4">SEP</div>
+                        <div>
+                            <p class="font-semibold">First Term Begins</p>
+                            <p class="text-sm text-gray-600">September 9, 2024</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center p-4 bg-green-50 rounded-lg">
+                        <div class="w-12 h-12 bg-secondary rounded-lg flex items-center justify-center text-white font-bold mr-4">DEC</div>
+                        <div>
+                            <p class="font-semibold">First Term Ends</p>
+                            <p class="text-sm text-gray-600">December 20, 2024</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center p-4 bg-blue-50 rounded-lg">
+                        <div class="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold mr-4">JAN</div>
+                        <div>
+                            <p class="font-semibold">Second Term Begins</p>
+                            <p class="text-sm text-gray-600">January 6, 2025</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admissions Page -->
+    <div id="admissionsPage" class="hidden min-h-screen bg-offwhite">
+        <div class="bg-white shadow-sm sticky top-0 z-40">
+            <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+                <button onclick="showLanding()" class="text-primary hover:text-secondary font-semibold">
+                    <i class="fas fa-arrow-left mr-2"></i>Back to Home
+                </button>
+                <h2 class="text-2xl font-bold text-primary">Admissions</h2>
+                <div class="w-24"></div>
+            </div>
+        </div>
+        
+        <div class="max-w-4xl mx-auto p-6">
+            <div class="glass rounded-2xl p-8 mb-8">
+                <h3 class="text-3xl font-bold text-primary mb-4 text-center">Join Our Family</h3>
+                <p class="text-gray-600 text-center mb-8">Admission is open for the 2024/2025 academic session. Follow the steps below to apply.</p>
+                
+                <div class="grid md:grid-cols-4 gap-4 mb-8">
+                    <div class="text-center">
+                        <div class="w-12 h-12 bg-primary rounded-full mx-auto mb-2 flex items-center justify-center text-white font-bold">1</div>
+                        <p class="text-sm font-semibold">Fill Form</p>
+                        <p class="text-xs text-gray-500">Complete online application</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="w-12 h-12 bg-secondary rounded-full mx-auto mb-2 flex items-center justify-center text-white font-bold">2</div>
+                        <p class="text-sm font-semibold">Pay Fee</p>
+                        <p class="text-xs text-gray-500">₦5,000 admission fee</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="w-12 h-12 bg-primary rounded-full mx-auto mb-2 flex items-center justify-center text-white font-bold">3</div>
+                        <p class="text-sm font-semibold">Get Reg No</p>
+                        <p class="text-xs text-gray-500">Instant registration number</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="w-12 h-12 bg-secondary rounded-full mx-auto mb-2 flex items-center justify-center text-white font-bold">4</div>
+                        <p class="text-sm font-semibold">Start Learning</p>
+                        <p class="text-xs text-gray-500">Begin your journey</p>
+                    </div>
+                </div>
+
+                <div class="bg-green-50 rounded-xl p-6 mb-6">
+                    <h4 class="font-bold text-primary mb-3">Admission Requirements</h4>
+                    <ul class="space-y-2 text-sm text-gray-700">
+                        <li><i class="fas fa-check-circle text-primary mr-2"></i>Birth Certificate or Declaration of Age</li>
+                        <li><i class="fas fa-check-circle text-primary mr-2"></i>Last Academic Result (if transferring)</li>
+                        <li><i class="fas fa-check-circle text-primary mr-2"></i>Passport Photographs (4 copies)</li>
+                        <li><i class="fas fa-check-circle text-primary mr-2"></i>Parent/Guardian ID Card</li>
+                        <li><i class="fas fa-check-circle text-primary mr-2"></i>Medical Fitness Certificate</li>
+                    </ul>
+                </div>
+
+                <button onclick="showAdmissionForm()" class="w-full btn-primary py-4 rounded-xl font-bold text-lg">
+                    <i class="fas fa-edit mr-2"></i>Start Application Now
+                </button>
+            </div>
+
+            <div class="glass rounded-2xl p-8">
+                <h4 class="text-xl font-bold text-primary mb-4">Fee Structure</h4>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead class="table-header">
+                            <tr>
+                                <th class="p-3 text-left">Level</th>
+                                <th class="p-3 text-left">Tuition Fee</th>
+                                <th class="p-3 text-left">Other Charges</th>
+                                <th class="p-3 text-left">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="border-b">
+                                <td class="p-3 font-medium">Nursery</td>
+                                <td class="p-3">₦30,000</td>
+                                <td class="p-3">₦10,000</td>
+                                <td class="p-3 font-bold text-primary">₦40,000</td>
+                            </tr>
+                            <tr class="border-b">
+                                <td class="p-3 font-medium">Primary</td>
+                                <td class="p-3">₦35,000</td>
+                                <td class="p-3">₦10,000</td>
+                                <td class="p-3 font-bold text-primary">₦45,000</td>
+                            </tr>
+                            <tr class="border-b">
+                                <td class="p-3 font-medium">JSS</td>
+                                <td class="p-3">₦40,000</td>
+                                <td class="p-3">₦15,000</td>
+                                <td class="p-3 font-bold text-primary">₦55,000</td>
+                            </tr>
+                            <tr>
+                                <td class="p-3 font-medium">SSS</td>
+                                <td class="p-3">₦50,000</td>
+                                <td class="p-3">₦15,000</td>
+                                <td class="p-3 font-bold text-primary">₦65,000</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contact Page -->
+    <div id="contactPage" class="hidden min-h-screen bg-offwhite">
+        <div class="bg-white shadow-sm sticky top-0 z-40">
+            <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+                <button onclick="showLanding()" class="text-primary hover:text-secondary font-semibold">
+                    <i class="fas fa-arrow-left mr-2"></i>Back to Home
+                </button>
+                <h2 class="text-2xl font-bold text-primary">Contact Us</h2>
+                <div class="w-24"></div>
+            </div>
+        </div>
+        
+        <div class="max-w-6xl mx-auto p-6">
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="glass rounded-2xl p-8">
+                    <h3 class="text-2xl font-bold text-primary mb-6">Get in Touch</h3>
+                    
+                    <div class="space-y-6">
+                        <div class="flex items-start">
+                            <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center text-primary mr-4">
+                                <i class="fas fa-map-marker-alt text-xl"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold">Address</h4>
+                                <p class="text-gray-600">123 Education Road, Mirnga<br>Adamawa State, Nigeria</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start">
+                            <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center text-primary mr-4">
+                                <i class="fas fa-phone text-xl"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold">Phone</h4>
+                                <p class="text-gray-600">+234 803 123 4567<br>+234 805 987 6543</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start">
+                            <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center text-primary mr-4">
+                                <i class="fas fa-envelope text-xl"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold">Email</h4>
+                                <p class="text-gray-600">info@ibrafoundation.edu.ng<br>support@ibrafoundation.edu.ng</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start">
+                            <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center text-primary mr-4">
+                                <i class="fas fa-clock text-xl"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold">Office Hours</h4>
+                                <p class="text-gray-600">Monday - Friday: 8:00 AM - 4:00 PM<br>Saturday: 9:00 AM - 12:00 PM</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-8">
+                        <h4 class="font-semibold mb-4">Follow Us</h4>
+                        <div class="flex space-x-4">
+                            <a href="#" class="w-10 h-10 bg-primary rounded-full flex items-center justify-center text-white hover:bg-secondary transition"><i class="fab fa-facebook-f"></i></a>
+                            <a href="#" class="w-10 h-10 bg-primary rounded-full flex items-center justify-center text-white hover:bg-secondary transition"><i class="fab fa-twitter"></i></a>
+                            <a href="#" class="w-10 h-10 bg-primary rounded-full flex items-center justify-center text-white hover:bg-secondary transition"><i class="fab fa-instagram"></i></a>
+                            <a href="#" class="w-10 h-10 bg-primary rounded-full flex items-center justify-center text-white hover:bg-secondary transition"><i class="fab fa-whatsapp"></i></a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass rounded-2xl p-8">
+                    <h3 class="text-2xl font-bold text-primary mb-6">Send Message</h3>
+                    <form onsubmit="sendContactMessage(event)" class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Your Name</label>
+                            <input type="text" class="input-field w-full px-4 py-3 rounded-lg" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                            <input type="email" class="input-field w-full px-4 py-3 rounded-lg" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Subject</label>
+                            <select class="input-field w-full px-4 py-3 rounded-lg" required>
+                                <option value="">Select Subject</option>
+                                <option value="admission">Admission Inquiry</option>
+                                <option value="general">General Inquiry</option>
+                                <option value="complaint">Complaint</option>
+                                <option value="feedback">Feedback</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Message</label>
+                            <textarea class="input-field w-full px-4 py-3 rounded-lg" rows="4" required></textarea>
+                        </div>
+                        <button type="submit" class="w-full btn-primary py-3 rounded-lg font-semibold">
+                            <i class="fas fa-paper-plane mr-2"></i>Send Message
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="mt-8 glass rounded-2xl p-4 h-64 bg-gray-200 flex items-center justify-center">
+                <p class="text-gray-500"><i class="fas fa-map mr-2"></i>Interactive Map Would Be Displayed Here</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Student Login Page -->
+    <div id="studentLoginPage" class="hidden min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-blue-50 to-green-50">
+        <div class="glass rounded-2xl shadow-2xl p-8 w-full max-w-md border-t-4 border-blue-500">
+            <div class="text-center mb-8">
+                <button onclick="showLanding()" class="absolute top-4 left-4 text-gray-500 hover:text-primary">
+                    <i class="fas fa-arrow-left text-xl"></i>
+                </button>
+                <div class="w-20 h-20 bg-blue-100 rounded-full mx-auto mb-4 flex items-center justify-center text-blue-600 text-3xl">
+                    <i class="fas fa-user-graduate"></i>
+                </div>
+                <h1 class="text-2xl font-bold text-gray-800">Student Portal</h1>
+                <p class="text-blue-600 font-semibold">Login to your account</p>
             </div>
             
-            <form id="loginForm" class="space-y-4">
+            <form id="studentLoginForm" class="space-y-4">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Registration Number</label>
-                    <input type="text" id="regNo" class="input-field w-full px-4 py-3 rounded-lg" placeholder="Enter Reg. No (e.g., STD001, TCH001, DIR001)" required>
+                    <input type="text" id="studentRegNo" class="input-field w-full px-4 py-3 rounded-lg" placeholder="e.g., STD001" required>
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
-                    <input type="password" id="password" class="input-field w-full px-4 py-3 rounded-lg" placeholder="Enter password" required>
+                    <div class="relative">
+                        <input type="password" id="studentPassword" class="input-field w-full px-4 py-3 rounded-lg pr-10" placeholder="Enter password" required>
+                        <button type="button" onclick="togglePassword('studentPassword')" class="absolute right-3 top-3 text-gray-400 hover:text-gray-600">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
                 </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Role</label>
-                    <select id="roleSelect" class="input-field w-full px-4 py-3 rounded-lg" required>
-                        <option value="">Select Role</option>
-                        <option value="director">Director</option>
-                        <option value="principal">Principal</option>
-                        <option value="vice_principal">Vice Principal</option>
-                        <option value="headmaster">Headmaster</option>
-                        <option value="exam_officer">Exam Officer</option>
-                        <option value="bursary">Bursary</option>
-                        <option value="teacher">Teacher</option>
-                        <option value="student">Student</option>
-                    </select>
+                <div class="flex justify-between items-center text-sm">
+                    <label class="flex items-center">
+                        <input type="checkbox" class="mr-2 rounded text-primary focus:ring-primary"> Remember me
+                    </label>
+                    <a href="#" onclick="showForgotPassword('student')" class="text-blue-600 hover:underline">Forgot Password?</a>
                 </div>
                 <button type="submit" class="btn-primary w-full py-3 rounded-lg font-semibold text-lg shadow-lg">
                     <i class="fas fa-sign-in-alt mr-2"></i>Login
@@ -100,99 +673,329 @@
             </form>
 
             <div class="mt-6 text-center">
-                <p class="text-sm text-gray-600">New Student? <a href="#" onclick="showAdmission()" class="text-primary font-semibold hover:underline">Apply for Admission</a></p>
-                <p class="text-xs text-gray-500 mt-2">Contact admin for staff registration</p>
+                <p class="text-sm text-gray-600">New Student? <a href="#" onclick="showAdmissionForm()" class="text-blue-600 font-semibold hover:underline">Apply for Admission</a></p>
+                <p class="text-xs text-gray-500 mt-2">Default: STD001 / std123</p>
             </div>
         </div>
     </div>
 
-    <!-- Admission Page -->
-    <div id="admissionPage" class="hidden min-h-screen p-4 bg-offwhite">
+    <!-- Staff Login Page -->
+    <div id="staffLoginPage" class="hidden min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-green-50 to-emerald-50">
+        <div class="glass rounded-2xl shadow-2xl p-8 w-full max-w-md border-t-4 border-secondary">
+            <div class="text-center mb-8">
+                <button onclick="showLanding()" class="absolute top-4 left-4 text-gray-500 hover:text-primary">
+                    <i class="fas fa-arrow-left text-xl"></i>
+                </button>
+                <div class="w-20 h-20 bg-green-100 rounded-full mx-auto mb-4 flex items-center justify-center text-secondary text-3xl">
+                    <i class="fas fa-chalkboard-teacher"></i>
+                </div>
+                <h1 class="text-2xl font-bold text-gray-800">Staff Portal</h1>
+                <p class="text-secondary font-semibold">Teachers & Staff Login</p>
+            </div>
+            
+            <form id="staffLoginForm" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Staff ID</label>
+                    <input type="text" id="staffRegNo" class="input-field w-full px-4 py-3 rounded-lg" placeholder="e.g., TCH001" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                    <div class="relative">
+                        <input type="password" id="staffPassword" class="input-field w-full px-4 py-3 rounded-lg pr-10" placeholder="Enter password" required>
+                        <button type="button" onclick="togglePassword('staffPassword')" class="absolute right-3 top-3 text-gray-400 hover:text-gray-600">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Role</label>
+                    <select id="staffRole" class="input-field w-full px-4 py-3 rounded-lg" required>
+                        <option value="">Select Your Role</option>
+                        <option value="teacher">Teacher</option>
+                        <option value="bursary">Bursary</option>
+                        <option value="exam_officer">Exam Officer</option>
+                        <option value="headmaster">Headmaster</option>
+                    </select>
+                </div>
+                <div class="flex justify-between items-center text-sm">
+                    <label class="flex items-center">
+                        <input type="checkbox" class="mr-2 rounded text-primary focus:ring-primary"> Remember me
+                    </label>
+                    <a href="#" onclick="showForgotPassword('staff')" class="text-secondary hover:underline">Forgot Password?</a>
+                </div>
+                <button type="submit" class="btn-secondary w-full py-3 rounded-lg font-semibold text-lg shadow-lg">
+                    <i class="fas fa-sign-in-alt mr-2"></i>Login
+                </button>
+            </form>
+
+            <div class="mt-6 text-center">
+                <p class="text-sm text-gray-600">Contact admin for account issues</p>
+                <p class="text-xs text-gray-500 mt-2">Default: TCH001 / tch123</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Login Page -->
+    <div id="adminLoginPage" class="hidden min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-green-50 to-green-100">
+        <div class="glass rounded-2xl shadow-2xl p-8 w-full max-w-md border-t-4 border-primary">
+            <div class="text-center mb-8">
+                <button onclick="showLanding()" class="absolute top-4 left-4 text-gray-500 hover:text-primary">
+                    <i class="fas fa-arrow-left text-xl"></i>
+                </button>
+                <div class="w-20 h-20 bg-gradient-to-br from-primary to-secondary rounded-full mx-auto mb-4 flex items-center justify-center text-white text-3xl">
+                    <i class="fas fa-user-shield"></i>
+                </div>
+                <h1 class="text-2xl font-bold text-gray-800">Admin Portal</h1>
+                <p class="text-primary font-semibold">Directors & Principals Only</p>
+            </div>
+            
+            <form id="adminLoginForm" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Admin ID</label>
+                    <input type="text" id="adminRegNo" class="input-field w-full px-4 py-3 rounded-lg" placeholder="e.g., DIR001" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                    <div class="relative">
+                        <input type="password" id="adminPassword" class="input-field w-full px-4 py-3 rounded-lg pr-10" placeholder="Enter password" required>
+                        <button type="button" onclick="togglePassword('adminPassword')" class="absolute right-3 top-3 text-gray-400 hover:text-gray-600">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Admin Level</label>
+                    <select id="adminRole" class="input-field w-full px-4 py-3 rounded-lg" required>
+                        <option value="">Select Admin Level</option>
+                        <option value="director">Director</option>
+                        <option value="principal">Principal</option>
+                        <option value="vice_principal">Vice Principal</option>
+                    </select>
+                </div>
+                <div class="flex justify-between items-center text-sm">
+                    <label class="flex items-center">
+                        <input type="checkbox" class="mr-2 rounded text-primary focus:ring-primary"> Remember me
+                    </label>
+                    <a href="#" onclick="showForgotPassword('admin')" class="text-primary hover:underline">Forgot Password?</a>
+                </div>
+                <button type="submit" class="btn-primary w-full py-3 rounded-lg font-semibold text-lg shadow-lg">
+                    <i class="fas fa-sign-in-alt mr-2"></i>Login
+                </button>
+            </form>
+
+            <div class="mt-6 text-center">
+                <p class="text-sm text-red-600 font-semibold"><i class="fas fa-exclamation-triangle mr-1"></i>Restricted Access</p>
+                <p class="text-xs text-gray-500 mt-2">Default: DIR001 / dir123</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Forgot Password Modal -->
+    <div id="forgotPasswordModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 modal">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 relative">
+            <button onclick="closeForgotPassword()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+            <div class="text-center mb-6">
+                <div class="w-16 h-16 bg-yellow-100 rounded-full mx-auto mb-4 flex items-center justify-center text-yellow-600 text-2xl">
+                    <i class="fas fa-key"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-800">Reset Password</h3>
+                <p class="text-sm text-gray-600 mt-2">Enter your ID and registered email to reset your password</p>
+            </div>
+            <form id="forgotPasswordForm" onsubmit="processPasswordReset(event)" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">ID Number</label>
+                    <input type="text" id="resetId" class="input-field w-full px-4 py-2 rounded-lg" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Registered Email</label>
+                    <input type="email" id="resetEmail" class="input-field w-full px-4 py-2 rounded-lg" required>
+                </div>
+                <div id="resetCodeSection" class="hidden">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Verification Code</label>
+                    <input type="text" id="resetCode" class="input-field w-full px-4 py-2 rounded-lg" placeholder="Enter 6-digit code">
+                </div>
+                <div id="newPasswordSection" class="hidden">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">New Password</label>
+                    <input type="password" id="newPassword" class="input-field w-full px-4 py-2 rounded-lg">
+                    <label class="block text-sm font-medium text-gray-700 mb-1 mt-3">Confirm Password</label>
+                    <input type="password" id="confirmPassword" class="input-field w-full px-4 py-2 rounded-lg">
+                </div>
+                <button type="submit" id="resetSubmitBtn" class="btn-primary w-full py-3 rounded-lg font-semibold">
+                    Send Reset Code
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Admission Form Page -->
+    <div id="admissionFormPage" class="hidden min-h-screen p-4 bg-offwhite">
         <div class="max-w-4xl mx-auto glass rounded-2xl shadow-2xl p-6 md:p-8">
             <div class="flex justify-between items-center mb-6">
-                <div>
+                <button onclick="showLanding()" class="text-primary hover:underline font-semibold">
+                    <i class="fas fa-arrow-left mr-1"></i>Back to Home
+                </button>
+                <div class="text-center">
                     <h2 class="text-2xl font-bold gradient-text">Student Admission</h2>
-                    <p class="text-gray-600">Fill in your details to apply</p>
+                    <p class="text-gray-600 text-sm">2024/2025 Academic Session</p>
                 </div>
-                <button onclick="showLogin()" class="text-primary hover:underline"><i class="fas fa-arrow-left mr-1"></i>Back to Login</button>
+                <div class="w-20"></div>
             </div>
 
-            <form id="admissionForm" class="grid md:grid-cols-2 gap-6">
-                <div class="md:col-span-2">
-                    <h3 class="text-lg font-semibold text-primary mb-3 border-b pb-2">Personal Information</h3>
+            <!-- Progress Steps -->
+            <div class="flex justify-between mb-8 px-4">
+                <div class="flex-1 text-center">
+                    <div id="step1Indicator" class="w-10 h-10 bg-primary text-white rounded-full mx-auto flex items-center justify-center font-bold">1</div>
+                    <p class="text-xs mt-1 text-gray-600">Personal Info</p>
                 </div>
-                
-                <div>
-                    <label class="block text-sm font-medium mb-1">Surname</label>
-                    <input type="text" id="admSurname" class="input-field w-full px-4 py-2 rounded-lg" required>
+                <div class="flex-1 flex items-center justify-center">
+                    <div class="h-1 bg-gray-300 w-full mx-2"></div>
                 </div>
-                <div>
-                    <label class="block text-sm font-medium mb-1">First Name</label>
-                    <input type="text" id="admFirstName" class="input-field w-full px-4 py-2 rounded-lg" required>
+                <div class="flex-1 text-center">
+                    <div id="step2Indicator" class="w-10 h-10 bg-gray-300 text-gray-600 rounded-full mx-auto flex items-center justify-center font-bold">2</div>
+                    <p class="text-xs mt-1 text-gray-600">Parent Info</p>
                 </div>
-                <div>
-                    <label class="block text-sm font-medium mb-1">Other Names</label>
-                    <input type="text" id="admOtherNames" class="input-field w-full px-4 py-2 rounded-lg">
+                <div class="flex-1 flex items-center justify-center">
+                    <div class="h-1 bg-gray-300 w-full mx-2"></div>
                 </div>
-                <div>
-                    <label class="block text-sm font-medium mb-1">Date of Birth</label>
-                    <input type="date" id="admDOB" class="input-field w-full px-4 py-2 rounded-lg" required>
+                <div class="flex-1 text-center">
+                    <div id="step3Indicator" class="w-10 h-10 bg-gray-300 text-gray-600 rounded-full mx-auto flex items-center justify-center font-bold">3</div>
+                    <p class="text-xs mt-1 text-gray-600">Payment</p>
                 </div>
-                <div>
-                    <label class="block text-sm font-medium mb-1">Gender</label>
-                    <select id="admGender" class="input-field w-full px-4 py-2 rounded-lg" required>
-                        <option value="">Select Gender</option>
-                        <option value="Male">Male</option>
-                        <option value="Female">Female</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium mb-1">Class Applying For</label>
-                    <select id="admClass" class="input-field w-full px-4 py-2 rounded-lg" required>
-                        <option value="">Select Class</option>
-                        <option value="Nursery 1">Nursery 1</option>
-                        <option value="Nursery 2">Nursery 2</option>
-                        <option value="Primary 1">Primary 1</option>
-                        <option value="Primary 2">Primary 2</option>
-                        <option value="Primary 3">Primary 3</option>
-                        <option value="Primary 4">Primary 4</option>
-                        <option value="Primary 5">Primary 5</option>
-                        <option value="Primary 6">Primary 6</option>
-                        <option value="JSS 1">JSS 1</option>
-                        <option value="JSS 2">JSS 2</option>
-                        <option value="JSS 3">JSS 3</option>
-                        <option value="SSS 1">SSS 1</option>
-                        <option value="SSS 2">SSS 2</option>
-                        <option value="SSS 3">SSS 3</option>
-                    </select>
+            </div>
+
+            <form id="admissionForm" class="space-y-6">
+                <!-- Step 1: Personal Information -->
+                <div id="step1" class="space-y-4">
+                    <h3 class="text-lg font-semibold text-primary border-b pb-2">Personal Information</h3>
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Surname <span class="text-red-500">*</span></label>
+                            <input type="text" id="admSurname" class="input-field w-full px-4 py-2 rounded-lg" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1">First Name <span class="text-red-500">*</span></label>
+                            <input type="text" id="admFirstName" class="input-field w-full px-4 py-2 rounded-lg" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Other Names</label>
+                            <input type="text" id="admOtherNames" class="input-field w-full px-4 py-2 rounded-lg">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Date of Birth <span class="text-red-500">*</span></label>
+                            <input type="date" id="admDOB" class="input-field w-full px-4 py-2 rounded-lg" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Gender <span class="text-red-500">*</span></label>
+                            <select id="admGender" class="input-field w-full px-4 py-2 rounded-lg" required>
+                                <option value="">Select Gender</option>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Class Applying For <span class="text-red-500">*</span></label>
+                            <select id="admClass" class="input-field w-full px-4 py-2 rounded-lg" required>
+                                <option value="">Select Class</option>
+                                <option value="Nursery 1">Nursery 1</option>
+                                <option value="Nursery 2">Nursery 2</option>
+                                <option value="Primary 1">Primary 1</option>
+                                <option value="Primary 2">Primary 2</option>
+                                <option value="Primary 3">Primary 3</option>
+                                <option value="Primary 4">Primary 4</option>
+                                <option value="Primary 5">Primary 5</option>
+                                <option value="Primary 6">Primary 6</option>
+                                <option value="JSS 1">JSS 1</option>
+                                <option value="JSS 2">JSS 2</option>
+                                <option value="JSS 3">JSS 3</option>
+                                <option value="SSS 1">SSS 1</option>
+                                <option value="SSS 2">SSS 2</option>
+                                <option value="SSS 3">SSS 3</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="flex justify-end">
+                        <button type="button" onclick="nextStep(2)" class="btn-primary px-6 py-2 rounded-lg">
+                            Next <i class="fas fa-arrow-right ml-2"></i>
+                        </button>
+                    </div>
                 </div>
 
-                <div class="md:col-span-2">
-                    <h3 class="text-lg font-semibold text-primary mb-3 border-b pb-2 mt-4">Parent/Guardian Information</h3>
-                </div>
-                
-                <div>
-                    <label class="block text-sm font-medium mb-1">Parent Name</label>
-                    <input type="text" id="admParentName" class="input-field w-full px-4 py-2 rounded-lg" required>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium mb-1">Parent Phone</label>
-                    <input type="tel" id="admParentPhone" class="input-field w-full px-4 py-2 rounded-lg" required>
-                </div>
-                <div class="md:col-span-2">
-                    <label class="block text-sm font-medium mb-1">Address</label>
-                    <textarea id="admAddress" class="input-field w-full px-4 py-2 rounded-lg" rows="2" required></textarea>
+                <!-- Step 2: Parent Information -->
+                <div id="step2" class="hidden space-y-4">
+                    <h3 class="text-lg font-semibold text-primary border-b pb-2">Parent/Guardian Information</h3>
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Parent/Guardian Name <span class="text-red-500">*</span></label>
+                            <input type="text" id="admParentName" class="input-field w-full px-4 py-2 rounded-lg" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Relationship <span class="text-red-500">*</span></label>
+                            <select id="admRelationship" class="input-field w-full px-4 py-2 rounded-lg" required>
+                                <option value="">Select</option>
+                                <option value="Father">Father</option>
+                                <option value="Mother">Mother</option>
+                                <option value="Guardian">Guardian</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Phone Number <span class="text-red-500">*</span></label>
+                            <input type="tel" id="admParentPhone" class="input-field w-full px-4 py-2 rounded-lg" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Email Address</label>
+                            <input type="email" id="admParentEmail" class="input-field w-full px-4 py-2 rounded-lg">
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium mb-1">Residential Address <span class="text-red-500">*</span></label>
+                            <textarea id="admAddress" class="input-field w-full px-4 py-2 rounded-lg" rows="2" required></textarea>
+                        </div>
+                    </div>
+                    <div class="flex justify-between">
+                        <button type="button" onclick="prevStep(1)" class="px-6 py-2 rounded-lg border border-gray-300 hover:bg-gray-50">
+                            <i class="fas fa-arrow-left mr-2"></i>Back
+                        </button>
+                        <button type="button" onclick="nextStep(3)" class="btn-primary px-6 py-2 rounded-lg">
+                            Next <i class="fas fa-arrow-right ml-2"></i>
+                        </button>
+                    </div>
                 </div>
 
-                <div class="md:col-span-2 bg-green-50 p-4 rounded-lg border border-green-200">
-                    <h4 class="font-semibold text-primary mb-2">Admission Fee: ₦5,000</h4>
-                    <p class="text-sm text-gray-600">Pay now to generate your Registration Number and complete admission.</p>
-                </div>
+                <!-- Step 3: Payment -->
+                <div id="step3" class="hidden space-y-4">
+                    <h3 class="text-lg font-semibold text-primary border-b pb-2">Admission Fee Payment</h3>
+                    <div class="bg-green-50 rounded-xl p-6 text-center">
+                        <p class="text-gray-600 mb-2">Admission Fee Amount</p>
+                        <p class="text-4xl font-bold text-primary mb-4">₦5,000</p>
+                        <p class="text-sm text-gray-600 mb-6">Pay now to complete your registration and receive your student ID</p>
+                        
+                        <div class="bg-white rounded-lg p-4 mb-4 text-left">
+                            <h4 class="font-semibold mb-2">Payment Summary:</h4>
+                            <div class="flex justify-between text-sm mb-1">
+                                <span>Admission Fee</span>
+                                <span>₦5,000</span>
+                            </div>
+                            <div class="flex justify-between text-sm mb-1">
+                                <span>Processing Fee</span>
+                                <span>₦0</span>
+                            </div>
+                            <div class="border-t pt-2 mt-2 flex justify-between font-bold">
+                                <span>Total</span>
+                                <span>₦5,000</span>
+                            </div>
+                        </div>
 
-                <div class="md:col-span-2">
-                    <button type="button" onclick="payAdmissionFee()" class="btn-primary w-full py-3 rounded-lg font-semibold text-lg">
-                        <i class="fas fa-credit-card mr-2"></i>Pay Admission Fee (₦5,000)
-                    </button>
+                        <button type="button" onclick="payAdmissionFee()" class="btn-primary w-full py-4 rounded-xl font-bold text-lg">
+                            <i class="fas fa-credit-card mr-2"></i>Pay with Paystack
+                        </button>
+                        <p class="text-xs text-gray-500 mt-3"><i class="fas fa-lock mr-1"></i>Secure payment powered by Paystack</p>
+                    </div>
+                    <div class="flex justify-between">
+                        <button type="button" onclick="prevStep(2)" class="px-6 py-2 rounded-lg border border-gray-300 hover:bg-gray-50">
+                            <i class="fas fa-arrow-left mr-2"></i>Back
+                        </button>
+                    </div>
                 </div>
             </form>
         </div>
@@ -221,6 +1024,12 @@
             </nav>
             
             <div class="p-4 border-t mt-auto">
+                <button onclick="showProfile()" class="w-full text-left px-4 py-2 text-gray-700 hover:bg-green-50 rounded-lg transition mb-2">
+                    <i class="fas fa-user-circle mr-2"></i>My Profile
+                </button>
+                <button onclick="showChangePassword()" class="w-full text-left px-4 py-2 text-gray-700 hover:bg-green-50 rounded-lg transition mb-2">
+                    <i class="fas fa-key mr-2"></i>Change Password
+                </button>
                 <button onclick="logout()" class="w-full text-left px-4 py-2 text-red-600 hover:bg-red-50 rounded-lg transition">
                     <i class="fas fa-sign-out-alt mr-2"></i>Logout
                 </button>
@@ -236,7 +1045,7 @@
         <div id="mobileOverlay" onclick="toggleMobileMenu()" class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden md:hidden"></div>
 
         <!-- Main Content -->
-        <main class="flex-1 overflow-y-auto h-screen">
+        <main class="flex-1 overflow-y-auto h-screen bg-offwhite">
             <!-- Top Header -->
             <header class="bg-white shadow-sm sticky top-0 z-30 px-6 py-4 flex justify-between items-center">
                 <div>
@@ -244,11 +1053,15 @@
                     <p id="userInfo" class="text-sm text-gray-600"></p>
                 </div>
                 <div class="flex items-center space-x-4">
+                    <button onclick="showNotifications()" class="relative p-2 text-gray-600 hover:text-primary">
+                        <i class="fas fa-bell text-xl"></i>
+                        <span id="notifBadge" class="absolute top-0 right-0 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center hidden">0</span>
+                    </button>
                     <div class="text-right hidden sm:block">
                         <p id="currentUserName" class="font-semibold text-gray-800"></p>
                         <p id="currentUserRole" class="text-xs text-primary uppercase tracking-wide"></p>
                     </div>
-                    <div class="w-10 h-10 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center text-white font-bold" id="userAvatar">
+                    <div class="w-10 h-10 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center text-white font-bold cursor-pointer" id="userAvatar" onclick="showProfile()">
                         U
                     </div>
                 </div>
@@ -261,6 +1074,51 @@
         </main>
     </div>
 
+    <!-- Profile Modal -->
+    <div id="profileModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 modal">
+        <div class="bg-white rounded-2xl max-w-2xl w-full max-h-screen overflow-y-auto p-6 relative">
+            <button onclick="closeProfile()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+            <div id="profileContent"></div>
+        </div>
+    </div>
+
+    <!-- Change Password Modal -->
+    <div id="changePasswordModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 modal">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 relative">
+            <button onclick="closeChangePassword()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+            <div class="text-center mb-6">
+                <div class="w-16 h-16 bg-primary rounded-full mx-auto mb-4 flex items-center justify-center text-white text-2xl">
+                    <i class="fas fa-lock"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-800">Change Password</h3>
+            </div>
+            <form id="changePasswordForm" onsubmit="processChangePassword(event)" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Current Password</label>
+                    <input type="password" id="currentPwd" class="input-field w-full px-4 py-2 rounded-lg" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">New Password</label>
+                    <input type="password" id="newPwd" class="input-field w-full px-4 py-2 rounded-lg" required minlength="6">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Confirm New Password</label>
+                    <input type="password" id="confirmPwd" class="input-field w-full px-4 py-2 rounded-lg" required>
+                </div>
+                <button type="submit" class="btn-primary w-full py-3 rounded-lg font-semibold">
+                    Update Password
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toastContainer" class="fixed top-4 right-4 z-50 space-y-2"></div>
+
     <!-- Print Area for Report Cards -->
     <div id="printArea" class="print-area">
         <div id="printContent"></div>
@@ -272,16 +1130,17 @@
             currentUser: null,
             students: JSON.parse(localStorage.getItem('students')) || [],
             staff: JSON.parse(localStorage.getItem('staff')) || [
-                { id: 'DIR001', surname: 'Admin', firstName: 'Director', role: 'director', password: 'dir123', phone: '08000000000', email: 'director@ibrafoundation.edu', bankName: 'First Bank', accountNumber: '1234567890', accountName: 'Director Admin', salary: 500000 },
-                { id: 'PRN001', surname: 'Admin', firstName: 'Principal', role: 'principal', password: 'pri123', phone: '08000000001', email: 'principal@ibrafoundation.edu', bankName: 'GTBank', accountNumber: '0987654321', accountName: 'Principal Admin', salary: 400000, classTeacher: 'SSS 3' }
+                { id: 'DIR001', surname: 'Admin', firstName: 'Director', role: 'director', password: 'dir123', phone: '08000000000', email: 'director@ibrafoundation.edu', bankName: 'First Bank', accountNumber: '1234567890', accountName: 'Director Admin', salary: 500000, address: '123 Admin Street', gender: 'Male', dob: '1980-01-01' },
+                { id: 'PRN001', surname: 'Admin', firstName: 'Principal', role: 'principal', password: 'pri123', phone: '08000000001', email: 'principal@ibrafoundation.edu', bankName: 'GTBank', accountNumber: '0987654321', accountName: 'Principal Admin', salary: 400000, classTeacher: 'SSS 3', address: '456 Principal Ave', gender: 'Female', dob: '1985-05-15' },
+                { id: 'TCH001', surname: 'John', firstName: 'Teacher', role: 'teacher', password: 'tch123', phone: '08000000002', email: 'teacher@ibrafoundation.edu', bankName: 'Access Bank', accountNumber: '1122334455', accountName: 'John Teacher', salary: 150000, classTeacher: 'JSS 1', address: '789 Teacher Lane', gender: 'Male', dob: '1990-03-20' }
             ],
             classes: ['Nursery 1', 'Nursery 2', 'Primary 1', 'Primary 2', 'Primary 3', 'Primary 4', 'Primary 5', 'Primary 6', 'JSS 1', 'JSS 2', 'JSS 3', 'SSS 1', 'SSS 2', 'SSS 3'],
             sessions: ['2023/2024', '2024/2025'],
             terms: ['First Term', 'Second Term', 'Third Term'],
             subjects: {
-                nursery: ['English', 'Mathematics', 'Basic Science', 'Social Studies', 'Creative Arts'],
-                primary: ['English', 'Mathematics', 'Basic Science', 'Social Studies', 'Civic Education', 'Agricultural Science', 'Creative Arts', 'Physical Education', 'IRK/CRK'],
-                secondary: ['English', 'Mathematics', 'Biology', 'Chemistry', 'Physics', 'Geography', 'Economics', 'Government', 'Literature', 'History', 'Agricultural Science', 'Further Mathematics', 'Technical Drawing', 'Food Nutrition', 'IRK/CRK']
+                nursery: ['English', 'Mathematics', 'Basic Science', 'Social Studies', 'Creative Arts', 'Rhymes'],
+                primary: ['English', 'Mathematics', 'Basic Science', 'Social Studies', 'Civic Education', 'Agricultural Science', 'Creative Arts', 'Physical Education', 'IRK/CRK', 'Computer Studies'],
+                secondary: ['English', 'Mathematics', 'Biology', 'Chemistry', 'Physics', 'Geography', 'Economics', 'Government', 'Literature', 'History', 'Agricultural Science', 'Further Mathematics', 'Technical Drawing', 'Food Nutrition', 'IRK/CRK', 'Commerce']
             },
             payments: JSON.parse(localStorage.getItem('payments')) || [],
             results: JSON.parse(localStorage.getItem('results')) || [],
@@ -291,14 +1150,16 @@
             assignments: JSON.parse(localStorage.getItem('assignments')) || [],
             lessonNotes: JSON.parse(localStorage.getItem('lessonNotes')) || [],
             timetable: JSON.parse(localStorage.getItem('timetable')) || [],
-            calendar: JSON.parse(localStorage.getItem('calendar')) || []
+            calendar: JSON.parse(localStorage.getItem('calendar')) || [],
+            notifications: JSON.parse(localStorage.getItem('notifications')) || [],
+            passwordResets: JSON.parse(localStorage.getItem('passwordResets')) || []
         };
 
         // Initialize sample data if empty
         if (db.students.length === 0) {
             db.students.push(
-                { id: 'STD001', surname: 'John', firstName: 'Doe', otherNames: 'Smith', gender: 'Male', class: 'JSS 1', dob: '2010-05-15', parentName: 'Mr. John Doe Sr', parentPhone: '08012345678', address: '123 Main St, Mirnga', admissionDate: '2024-01-15', password: 'std123', status: 'active' },
-                { id: 'STD002', surname: 'Jane', firstName: 'Smith', otherNames: '', gender: 'Female', class: 'SSS 2', dob: '2008-08-20', parentName: 'Mrs. Smith', parentPhone: '08087654321', address: '456 Oak Ave, Mirnga', admissionDate: '2023-09-01', password: 'std123', status: 'active' }
+                { id: 'STD001', surname: 'John', firstName: 'Doe', otherNames: 'Smith', gender: 'Male', class: 'JSS 1', dob: '2010-05-15', parentName: 'Mr. John Doe Sr', parentPhone: '08012345678', parentEmail: 'parent@email.com', address: '123 Main St, Mirnga', admissionDate: '2024-01-15', password: 'std123', status: 'active', role: 'student' },
+                { id: 'STD002', surname: 'Jane', firstName: 'Smith', otherNames: '', gender: 'Female', class: 'SSS 2', dob: '2008-08-20', parentName: 'Mrs. Smith', parentPhone: '08087654321', parentEmail: 'smith@email.com', address: '456 Oak Ave, Mirnga', admissionDate: '2023-09-01', password: 'std123', status: 'active', role: 'student' }
             );
             saveData();
         }
@@ -315,6 +1176,8 @@
             localStorage.setItem('lessonNotes', JSON.stringify(db.lessonNotes));
             localStorage.setItem('timetable', JSON.stringify(db.timetable));
             localStorage.setItem('calendar', JSON.stringify(db.calendar));
+            localStorage.setItem('notifications', JSON.stringify(db.notifications));
+            localStorage.setItem('passwordResets', JSON.stringify(db.passwordResets));
         }
 
         // ID Generators
@@ -329,58 +1192,451 @@
             return `${prefix}${String(count).padStart(3, '0')}`;
         }
 
-        // Authentication
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const regNo = document.getElementById('regNo').value.toUpperCase();
-            const password = document.getElementById('password').value;
-            const role = document.getElementById('roleSelect').value;
+        // Navigation Functions
+        function showLanding() {
+            hideAllPages();
+            document.getElementById('landingPage').classList.remove('hidden');
+        }
 
-            let user = db.students.find(s => s.id === regNo && s.password === password && s.status === 'active');
-            if (!user) user = db.staff.find(s => s.id === regNo && s.password === password);
-            
-            if (user && user.role === role) {
-                db.currentUser = user;
-                showDashboard();
-            } else {
-                alert('Invalid credentials or role mismatch!');
-            }
-        });
-
-        function showLogin() {
-            document.getElementById('loginPage').classList.remove('hidden');
-            document.getElementById('admissionPage').classList.add('hidden');
+        function hideAllPages() {
+            document.getElementById('landingPage').classList.add('hidden');
+            document.getElementById('aboutUsPage').classList.add('hidden');
+            document.getElementById('academicsPage').classList.add('hidden');
+            document.getElementById('admissionsPage').classList.add('hidden');
+            document.getElementById('contactPage').classList.add('hidden');
+            document.getElementById('studentLoginPage').classList.add('hidden');
+            document.getElementById('staffLoginPage').classList.add('hidden');
+            document.getElementById('adminLoginPage').classList.add('hidden');
+            document.getElementById('admissionFormPage').classList.add('hidden');
             document.getElementById('dashboardContainer').classList.add('hidden');
         }
 
-        function showAdmission() {
-            document.getElementById('loginPage').classList.add('hidden');
-            document.getElementById('admissionPage').classList.remove('hidden');
+        function showAboutUs() {
+            hideAllPages();
+            document.getElementById('aboutUsPage').classList.remove('hidden');
+            window.scrollTo(0, 0);
         }
 
+        function showAcademics() {
+            hideAllPages();
+            document.getElementById('academicsPage').classList.remove('hidden');
+            window.scrollTo(0, 0);
+        }
+
+        function showAdmissions() {
+            hideAllPages();
+            document.getElementById('admissionsPage').classList.remove('hidden');
+            window.scrollTo(0, 0);
+        }
+
+        function showContact() {
+            hideAllPages();
+            document.getElementById('contactPage').classList.remove('hidden');
+            window.scrollTo(0, 0);
+        }
+
+        function showStudentLogin() {
+            hideAllPages();
+            document.getElementById('studentLoginPage').classList.remove('hidden');
+        }
+
+        function showStaffLogin() {
+            hideAllPages();
+            document.getElementById('staffLoginPage').classList.remove('hidden');
+        }
+
+        function showAdminLogin() {
+            hideAllPages();
+            document.getElementById('adminLoginPage').classList.remove('hidden');
+        }
+
+        function showAdmissionForm() {
+            hideAllPages();
+            document.getElementById('admissionFormPage').classList.remove('hidden');
+        }
+
+        function toggleMobileNav() {
+            document.getElementById('mobileNav').classList.toggle('hidden');
+        }
+
+        function togglePassword(inputId) {
+            const input = document.getElementById(inputId);
+            const type = input.type === 'password' ? 'text' : 'password';
+            input.type = type;
+        }
+
+        // Admission Form Steps
+        function nextStep(step) {
+            // Validate current step
+            if (step === 2) {
+                if (!document.getElementById('admSurname').value || !document.getElementById('admFirstName').value || !document.getElementById('admDOB').value || !document.getElementById('admGender').value || !document.getElementById('admClass').value) {
+                    showToast('Please fill all required fields', 'error');
+                    return;
+                }
+            } else if (step === 3) {
+                if (!document.getElementById('admParentName').value || !document.getElementById('admParentPhone').value || !document.getElementById('admAddress').value) {
+                    showToast('Please fill all required fields', 'error');
+                    return;
+                }
+            }
+
+            document.getElementById('step1').classList.add('hidden');
+            document.getElementById('step2').classList.add('hidden');
+            document.getElementById('step3').classList.add('hidden');
+            
+            document.getElementById(`step${step}`).classList.remove('hidden');
+            
+            // Update indicators
+            document.getElementById('step1Indicator').className = step >= 1 ? 'w-10 h-10 bg-primary text-white rounded-full mx-auto flex items-center justify-center font-bold' : 'w-10 h-10 bg-gray-300 text-gray-600 rounded-full mx-auto flex items-center justify-center font-bold';
+            document.getElementById('step2Indicator').className = step >= 2 ? 'w-10 h-10 bg-primary text-white rounded-full mx-auto flex items-center justify-center font-bold' : 'w-10 h-10 bg-gray-300 text-gray-600 rounded-full mx-auto flex items-center justify-center font-bold';
+            document.getElementById('step3Indicator').className = step >= 3 ? 'w-10 h-10 bg-primary text-white rounded-full mx-auto flex items-center justify-center font-bold' : 'w-10 h-10 bg-gray-300 text-gray-600 rounded-full mx-auto flex items-center justify-center font-bold';
+        }
+
+        function prevStep(step) {
+            nextStep(step);
+        }
+
+        // Password Reset Functions
+        let resetUserType = '';
+        let resetVerificationCode = '';
+
+        function showForgotPassword(userType) {
+            resetUserType = userType;
+            document.getElementById('forgotPasswordModal').classList.remove('hidden');
+            document.getElementById('resetCodeSection').classList.add('hidden');
+            document.getElementById('newPasswordSection').classList.add('hidden');
+            document.getElementById('resetSubmitBtn').textContent = 'Send Reset Code';
+        }
+
+        function closeForgotPassword() {
+            document.getElementById('forgotPasswordModal').classList.add('hidden');
+        }
+
+        function processPasswordReset(e) {
+            e.preventDefault();
+            const id = document.getElementById('resetId').value.toUpperCase();
+            const email = document.getElementById('resetEmail').value;
+            const btn = document.getElementById('resetSubmitBtn');
+
+            if (btn.textContent === 'Send Reset Code') {
+                // Verify user exists
+                let user = db.students.find(s => s.id === id && s.parentEmail === email);
+                if (!user && resetUserType !== 'student') {
+                    user = db.staff.find(s => s.id === id && s.email === email);
+                }
+
+                if (!user) {
+                    showToast('No account found with that ID and email', 'error');
+                    return;
+                }
+
+                // Generate and send code (simulated)
+                resetVerificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+                console.log('Verification code:', resetVerificationCode); // In real app, this would be sent via email
+                
+                showToast('Verification code sent to your email', 'success');
+                document.getElementById('resetCodeSection').classList.remove('hidden');
+                btn.textContent = 'Verify Code';
+            } else if (btn.textContent === 'Verify Code') {
+                const enteredCode = document.getElementById('resetCode').value;
+                if (enteredCode !== resetVerificationCode) {
+                    showToast('Invalid verification code', 'error');
+                    return;
+                }
+                document.getElementById('newPasswordSection').classList.remove('hidden');
+                btn.textContent = 'Reset Password';
+            } else if (btn.textContent === 'Reset Password') {
+                const newPwd = document.getElementById('newPassword').value;
+                const confirmPwd = document.getElementById('confirmPassword').value;
+
+                if (newPwd !== confirmPwd) {
+                    showToast('Passwords do not match', 'error');
+                    return;
+                }
+
+                if (newPwd.length < 6) {
+                    showToast('Password must be at least 6 characters', 'error');
+                    return;
+                }
+
+                // Update password
+                let user = db.students.find(s => s.id === id);
+                if (user) {
+                    user.password = newPwd;
+                } else {
+                    user = db.staff.find(s => s.id === id);
+                    if (user) user.password = newPwd;
+                }
+
+                saveData();
+                showToast('Password reset successful! Please login.', 'success');
+                closeForgotPassword();
+            }
+        }
+
+        // Contact Form
+        function sendContactMessage(e) {
+            e.preventDefault();
+            showToast('Message sent successfully! We will get back to you soon.', 'success');
+            e.target.reset();
+        }
+
+        // Toast Notifications
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            const bgColor = type === 'success' ? 'bg-green-500' : type === 'error' ? 'bg-red-500' : 'bg-blue-500';
+            const icon = type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle';
+            
+            toast.className = `${bgColor} text-white px-6 py-3 rounded-lg shadow-lg flex items-center gap-2 toast`;
+            toast.innerHTML = `<i class="fas fa-${icon}"></i><span>${message}</span>`;
+            
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+
+        // Login Handlers
+        document.getElementById('studentLoginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const regNo = document.getElementById('studentRegNo').value.toUpperCase();
+            const password = document.getElementById('studentPassword').value;
+
+            const user = db.students.find(s => s.id === regNo && s.password === password && s.status === 'active');
+            
+            if (user) {
+                db.currentUser = user;
+                showDashboard();
+            } else {
+                showToast('Invalid credentials!', 'error');
+            }
+        });
+
+        document.getElementById('staffLoginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const regNo = document.getElementById('staffRegNo').value.toUpperCase();
+            const password = document.getElementById('staffPassword').value;
+            const role = document.getElementById('staffRole').value;
+
+            const user = db.staff.find(s => s.id === regNo && s.password === password && s.role === role);
+            
+            if (user) {
+                db.currentUser = user;
+                showDashboard();
+            } else {
+                showToast('Invalid credentials or role mismatch!', 'error');
+            }
+        });
+
+        document.getElementById('adminLoginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const regNo = document.getElementById('adminRegNo').value.toUpperCase();
+            const password = document.getElementById('adminPassword').value;
+            const role = document.getElementById('adminRole').value;
+
+            const user = db.staff.find(s => s.id === regNo && s.password === password && s.role === role);
+            
+            if (user) {
+                db.currentUser = user;
+                showDashboard();
+            } else {
+                showToast('Invalid credentials or insufficient privileges!', 'error');
+            }
+        });
+
         function showDashboard() {
-            document.getElementById('loginPage').classList.add('hidden');
-            document.getElementById('admissionPage').classList.add('hidden');
+            hideAllPages();
             document.getElementById('dashboardContainer').classList.remove('hidden');
             
             const user = db.currentUser;
             document.getElementById('currentUserName').textContent = `${user.surname} ${user.firstName}`;
             document.getElementById('currentUserRole').textContent = user.role.replace('_', ' ');
             document.getElementById('userAvatar').textContent = user.firstName[0];
-            document.getElementById('userInfo').textContent = `Reg No: ${user.id}`;
+            document.getElementById('userInfo').textContent = `ID: ${user.id}`;
             
             setupSidebar();
             loadRoleDashboard();
+            updateNotifications();
         }
 
         function logout() {
             db.currentUser = null;
-            showLogin();
+            showLanding();
+            showToast('Logged out successfully', 'success');
         }
 
         function toggleMobileMenu() {
             document.getElementById('sidebar').classList.toggle('active');
             document.getElementById('mobileOverlay').classList.toggle('hidden');
+        }
+
+        // Profile and Password Functions
+        function showProfile() {
+            const user = db.currentUser;
+            const isStudent = user.role === 'student';
+            
+            let content = `
+                <div class="text-center mb-6">
+                    <div class="w-24 h-24 bg-gradient-to-br from-primary to-secondary rounded-full mx-auto mb-4 flex items-center justify-center text-white text-3xl font-bold">
+                        ${user.firstName[0]}${user.surname[0]}
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-800">${user.surname} ${user.firstName}</h3>
+                    <p class="text-primary font-semibold capitalize">${user.role.replace('_', ' ')}</p>
+                    <span class="inline-block mt-2 px-4 py-1 bg-green-100 text-green-800 rounded-full text-sm font-semibold">Active</span>
+                </div>
+                
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="space-y-4">
+                        <h4 class="font-bold text-primary border-b pb-2">Personal Information</h4>
+                        <div>
+                            <label class="text-sm text-gray-500">ID Number</label>
+                            <p class="font-semibold">${user.id}</p>
+                        </div>
+                        <div>
+                            <label class="text-sm text-gray-500">Full Name</label>
+                            <p class="font-semibold">${user.surname} ${user.firstName} ${user.otherNames || ''}</p>
+                        </div>
+                        <div>
+                            <label class="text-sm text-gray-500">Gender</label>
+                            <p class="font-semibold">${user.gender}</p>
+                        </div>
+                        <div>
+                            <label class="text-sm text-gray-500">Date of Birth</label>
+                            <p class="font-semibold">${user.dob}</p>
+                        </div>
+                        ${isStudent ? `
+                        <div>
+                            <label class="text-sm text-gray-500">Class</label>
+                            <p class="font-semibold">${user.class}</p>
+                        </div>
+                        <div>
+                            <label class="text-sm text-gray-500">Admission Date</label>
+                            <p class="font-semibold">${user.admissionDate}</p>
+                        </div>
+                        ` : `
+                        <div>
+                            <label class="text-sm text-gray-500">Phone</label>
+                            <p class="font-semibold">${user.phone}</p>
+                        </div>
+                        <div>
+                            <label class="text-sm text-gray-500">Email</label>
+                            <p class="font-semibold">${user.email}</p>
+                        </div>
+                        ${user.classTeacher ? `
+                        <div>
+                            <label class="text-sm text-gray-500">Class Teacher</label>
+                            <p class="font-semibold">${user.classTeacher}</p>
+                        </div>
+                        ` : ''}
+                        `}
+                    </div>
+                    
+                    <div class="space-y-4">
+                        ${isStudent ? `
+                        <h4 class="font-bold text-primary border-b pb-2">Parent/Guardian Information</h4>
+                        <div>
+                            <label class="text-sm text-gray-500">Parent Name</label>
+                            <p class="font-semibold">${user.parentName}</p>
+                        </div>
+                        <div>
+                            <label class="text-sm text-gray-500">Phone</label>
+                            <p class="font-semibold">${user.parentPhone}</p>
+                        </div>
+                        <div>
+                            <label class="text-sm text-gray-500">Email</label>
+                            <p class="font-semibold">${user.parentEmail || 'N/A'}</p>
+                        </div>
+                        <div>
+                            <label class="text-sm text-gray-500">Address</label>
+                            <p class="font-semibold">${user.address}</p>
+                        </div>
+                        ` : `
+                        <h4 class="font-bold text-primary border-b pb-2">Employment Information</h4>
+                        <div>
+                            <label class="text-sm text-gray-500">Role</label>
+                            <p class="font-semibold capitalize">${user.role.replace('_', ' ')}</p>
+                        </div>
+                        <div>
+                            <label class="text-sm text-gray-500">Salary</label>
+                            <p class="font-semibold">₦${(user.salary || 0).toLocaleString()}</p>
+                        </div>
+                        <div>
+                            <label class="text-sm text-gray-500">Bank Details</label>
+                            <p class="font-semibold">${user.bankName || 'N/A'}</p>
+                            <p class="text-sm text-gray-600">${user.accountNumber || ''}</p>
+                        </div>
+                        <div>
+                            <label class="text-sm text-gray-500">Address</label>
+                            <p class="font-semibold">${user.address || 'N/A'}</p>
+                        </div>
+                        `}
+                    </div>
+                </div>
+                
+                <div class="mt-6 flex justify-end space-x-3">
+                    <button onclick="closeProfile()" class="px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">Close</button>
+                    <button onclick="closeProfile(); showChangePassword()" class="btn-primary px-6 py-2 rounded-lg">
+                        <i class="fas fa-key mr-2"></i>Change Password
+                    </button>
+                </div>
+            `;
+            
+            document.getElementById('profileContent').innerHTML = content;
+            document.getElementById('profileModal').classList.remove('hidden');
+        }
+
+        function closeProfile() {
+            document.getElementById('profileModal').classList.add('hidden');
+        }
+
+        function showChangePassword() {
+            document.getElementById('changePasswordModal').classList.remove('hidden');
+        }
+
+        function closeChangePassword() {
+            document.getElementById('changePasswordModal').classList.add('hidden');
+            document.getElementById('changePasswordForm').reset();
+        }
+
+        function processChangePassword(e) {
+            e.preventDefault();
+            const currentPwd = document.getElementById('currentPwd').value;
+            const newPwd = document.getElementById('newPwd').value;
+            const confirmPwd = document.getElementById('confirmPwd').value;
+
+            if (db.currentUser.password !== currentPwd) {
+                showToast('Current password is incorrect', 'error');
+                return;
+            }
+
+            if (newPwd !== confirmPwd) {
+                showToast('New passwords do not match', 'error');
+                return;
+            }
+
+            if (newPwd.length < 6) {
+                showToast('Password must be at least 6 characters', 'error');
+                return;
+            }
+
+            db.currentUser.password = newPwd;
+            saveData();
+            showToast('Password changed successfully!', 'success');
+            closeChangePassword();
+        }
+
+        function showNotifications() {
+            showToast('Notifications feature - Coming soon!', 'info');
+        }
+
+        function updateNotifications() {
+            // Placeholder for notification system
+            const badge = document.getElementById('notifBadge');
+            if (badge) {
+                badge.classList.add('hidden');
+            }
         }
 
         // Sidebar Setup
@@ -474,6 +1730,10 @@
             dashboards[role]();
         }
 
+        function setPageTitle(title) {
+            document.getElementById('pageTitle').textContent = title;
+        }
+
         // ==================== DIRECTOR DASHBOARD ====================
         function loadDirectorDashboard() {
             setPageTitle('Director Dashboard');
@@ -483,7 +1743,7 @@
             const totalSalaries = db.salaryPayments.reduce((sum, s) => sum + s.amount, 0);
 
             document.getElementById('mainContent').innerHTML = `
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 fade-in">
                     <div class="glass rounded-xl p-6 card-hover border-l-4 border-primary">
                         <div class="flex justify-between items-start">
                             <div>
@@ -530,7 +1790,7 @@
                     </div>
                 </div>
 
-                <div class="grid md:grid-cols-2 gap-6">
+                <div class="grid md:grid-cols-2 gap-6 fade-in">
                     <div class="glass rounded-xl p-6">
                         <h3 class="text-lg font-bold text-primary mb-4">Recent Student Admissions</h3>
                         <div class="overflow-x-auto">
@@ -551,7 +1811,7 @@
                                             <td class="p-3"><span class="status-badge status-active">${s.class}</span></td>
                                             <td class="p-3 text-gray-500">${s.admissionDate || 'N/A'}</td>
                                         </tr>
-                                    `).join('')}
+                                    `).join('') || '<tr><td colspan="4" class="p-4 text-center text-gray-500">No recent admissions</td></tr>'}
                                 </tbody>
                             </table>
                         </div>
@@ -581,14 +1841,14 @@
         function manageStaff() {
             setPageTitle('Staff Management');
             document.getElementById('mainContent').innerHTML = `
-                <div class="flex justify-between mb-6">
+                <div class="flex justify-between mb-6 fade-in">
                     <button onclick="showAddStaffModal()" class="btn-primary px-6 py-2 rounded-lg">
                         <i class="fas fa-plus mr-2"></i>Add New Staff
                     </button>
                     <input type="text" placeholder="Search staff..." class="input-field px-4 py-2 rounded-lg w-64" onkeyup="searchStaff(this.value)">
                 </div>
                 
-                <div class="glass rounded-xl overflow-hidden">
+                <div class="glass rounded-xl overflow-hidden fade-in">
                     <div class="overflow-x-auto">
                         <table class="w-full text-sm" id="staffTable">
                             <thead class="table-header">
@@ -616,8 +1876,8 @@
                                         </td>
                                         <td class="p-4">₦${(s.salary || 0).toLocaleString()}</td>
                                         <td class="p-4">
-                                            <button onclick="editStaff('${s.id}')" class="text-blue-600 hover:text-blue-800 mr-2"><i class="fas fa-edit"></i></button>
-                                            <button onclick="deleteStaff('${s.id}')" class="text-red-600 hover:text-red-800"><i class="fas fa-trash"></i></button>
+                                            <button onclick="editStaff('${s.id}')" class="text-blue-600 hover:text-blue-800 mr-2" title="Edit"><i class="fas fa-edit"></i></button>
+                                            <button onclick="deleteStaff('${s.id}')" class="text-red-600 hover:text-red-800" title="Delete"><i class="fas fa-trash"></i></button>
                                         </td>
                                     </tr>
                                 `).join('')}
@@ -630,24 +1890,24 @@
 
         function showAddStaffModal() {
             const modal = document.createElement('div');
-            modal.className = 'fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4';
+            modal.className = 'fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 modal';
             modal.innerHTML = `
-                <div class="bg-white rounded-2xl max-w-2xl w-full max-h-screen overflow-y-auto p-6">
-                    <div class="flex justify-between items-center mb-6">
-                        <h3 class="text-xl font-bold text-primary">Add New Staff</h3>
-                        <button onclick="this.closest('.fixed').remove()" class="text-gray-500 hover:text-gray-700"><i class="fas fa-times text-xl"></i></button>
-                    </div>
+                <div class="bg-white rounded-2xl max-w-2xl w-full max-h-screen overflow-y-auto p-6 relative">
+                    <button onclick="this.closest('.fixed').remove()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                    <h3 class="text-xl font-bold text-primary mb-6">Add New Staff</h3>
                     <form onsubmit="saveStaff(event)" class="grid md:grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-sm font-medium mb-1">Surname</label>
+                            <label class="block text-sm font-medium mb-1">Surname <span class="text-red-500">*</span></label>
                             <input type="text" name="surname" class="input-field w-full px-3 py-2 rounded-lg" required>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium mb-1">First Name</label>
+                            <label class="block text-sm font-medium mb-1">First Name <span class="text-red-500">*</span></label>
                             <input type="text" name="firstName" class="input-field w-full px-3 py-2 rounded-lg" required>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium mb-1">Role</label>
+                            <label class="block text-sm font-medium mb-1">Role <span class="text-red-500">*</span></label>
                             <select name="role" class="input-field w-full px-3 py-2 rounded-lg" required>
                                 <option value="principal">Principal</option>
                                 <option value="vice_principal">Vice Principal</option>
@@ -658,12 +1918,23 @@
                             </select>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium mb-1">Phone</label>
+                            <label class="block text-sm font-medium mb-1">Phone <span class="text-red-500">*</span></label>
                             <input type="tel" name="phone" class="input-field w-full px-3 py-2 rounded-lg" required>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium mb-1">Email</label>
-                            <input type="email" name="email" class="input-field w-full px-3 py-2 rounded-lg">
+                            <label class="block text-sm font-medium mb-1">Email <span class="text-red-500">*</span></label>
+                            <input type="email" name="email" class="input-field w-full px-3 py-2 rounded-lg" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Gender <span class="text-red-500">*</span></label>
+                            <select name="gender" class="input-field w-full px-3 py-2 rounded-lg" required>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Date of Birth</label>
+                            <input type="date" name="dob" class="input-field w-full px-3 py-2 rounded-lg">
                         </div>
                         <div>
                             <label class="block text-sm font-medium mb-1">Class Teacher (if applicable)</label>
@@ -673,22 +1944,26 @@
                             </select>
                         </div>
                         <div class="md:col-span-2">
-                            <h4 class="font-semibold text-primary mt-4 mb-2">Bank Account Details for Salary</h4>
+                            <label class="block text-sm font-medium mb-1">Address</label>
+                            <textarea name="address" class="input-field w-full px-3 py-2 rounded-lg" rows="2"></textarea>
+                        </div>
+                        <div class="md:col-span-2">
+                            <h4 class="font-semibold text-primary mt-4 mb-2 border-b pb-2">Bank Account Details for Salary</h4>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium mb-1">Bank Name</label>
+                            <label class="block text-sm font-medium mb-1">Bank Name <span class="text-red-500">*</span></label>
                             <input type="text" name="bankName" class="input-field w-full px-3 py-2 rounded-lg" required>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium mb-1">Account Number</label>
+                            <label class="block text-sm font-medium mb-1">Account Number <span class="text-red-500">*</span></label>
                             <input type="text" name="accountNumber" class="input-field w-full px-3 py-2 rounded-lg" required>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium mb-1">Account Name</label>
+                            <label class="block text-sm font-medium mb-1">Account Name <span class="text-red-500">*</span></label>
                             <input type="text" name="accountName" class="input-field w-full px-3 py-2 rounded-lg" required>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium mb-1">Monthly Salary (₦)</label>
+                            <label class="block text-sm font-medium mb-1">Monthly Salary (₦) <span class="text-red-500">*</span></label>
                             <input type="number" name="salary" class="input-field w-full px-3 py-2 rounded-lg" required>
                         </div>
                         <div class="md:col-span-2">
@@ -711,6 +1986,9 @@
                 role: role,
                 phone: form.phone.value,
                 email: form.email.value,
+                gender: form.gender.value,
+                dob: form.dob.value,
+                address: form.address.value,
                 classTeacher: form.classTeacher.value || null,
                 bankName: form.bankName.value,
                 accountNumber: form.accountNumber.value,
@@ -720,16 +1998,170 @@
             };
             db.staff.push(newStaff);
             saveData();
-            alert(`Staff registered successfully!\nReg No: ${newStaff.id}\nPassword: ${newStaff.password}`);
+            showToast(`Staff registered! ID: ${newStaff.id}, Password: ${newStaff.password}`, 'success');
             manageStaff();
-            document.querySelector('.fixed').remove();
+            document.querySelector('.modal').remove();
+        }
+
+        function deleteStaff(id) {
+            if (id === db.currentUser.id) {
+                showToast('You cannot delete your own account!', 'error');
+                return;
+            }
+            if (confirm('Are you sure you want to delete this staff member?')) {
+                db.staff = db.staff.filter(s => s.id !== id);
+                saveData();
+                showToast('Staff deleted successfully', 'success');
+                manageStaff();
+            }
+        }
+
+        function editStaff(id) {
+            const staff = db.staff.find(s => s.id === id);
+            if (!staff) return;
+
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 modal';
+            modal.innerHTML = `
+                <div class="bg-white rounded-2xl max-w-2xl w-full max-h-screen overflow-y-auto p-6 relative">
+                    <button onclick="this.closest('.fixed').remove()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                    <h3 class="text-xl font-bold text-primary mb-6">Edit Staff</h3>
+                    <form onsubmit="updateStaff(event, '${id}')" class="grid md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Surname</label>
+                            <input type="text" name="surname" value="${staff.surname}" class="input-field w-full px-3 py-2 rounded-lg" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1">First Name</label>
+                            <input type="text" name="firstName" value="${staff.firstName}" class="input-field w-full px-3 py-2 rounded-lg" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Phone</label>
+                            <input type="tel" name="phone" value="${staff.phone}" class="input-field w-full px-3 py-2 rounded-lg" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Email</label>
+                            <input type="email" name="email" value="${staff.email}" class="input-field w-full px-3 py-2 rounded-lg" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Bank Name</label>
+                            <input type="text" name="bankName" value="${staff.bankName || ''}" class="input-field w-full px-3 py-2 rounded-lg">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Account Number</label>
+                            <input type="text" name="accountNumber" value="${staff.accountNumber || ''}" class="input-field w-full px-3 py-2 rounded-lg">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Monthly Salary (₦)</label>
+                            <input type="number" name="salary" value="${staff.salary || 0}" class="input-field w-full px-3 py-2 rounded-lg">
+                        </div>
+                        <div class="md:col-span-2">
+                            <button type="submit" class="btn-primary w-full py-3 rounded-lg font-semibold mt-4">Update Staff</button>
+                        </div>
+                    </form>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        function updateStaff(e, id) {
+            e.preventDefault();
+            const form = e.target;
+            const staff = db.staff.find(s => s.id === id);
+            if (staff) {
+                staff.surname = form.surname.value;
+                staff.firstName = form.firstName.value;
+                staff.phone = form.phone.value;
+                staff.email = form.email.value;
+                staff.bankName = form.bankName.value;
+                staff.accountNumber = form.accountNumber.value;
+                staff.salary = parseInt(form.salary.value);
+                saveData();
+                showToast('Staff updated successfully', 'success');
+                manageStaff();
+                document.querySelector('.modal').remove();
+            }
+        }
+
+        function manageStudents() {
+            setPageTitle('Student Management');
+            document.getElementById('mainContent').innerHTML = `
+                <div class="flex justify-between mb-6 fade-in">
+                    <input type="text" placeholder="Search students..." class="input-field px-4 py-2 rounded-lg w-64" onkeyup="searchStudents(this.value)">
+                    <button onclick="exportStudents()" class="btn-primary px-4 py-2 rounded-lg"><i class="fas fa-download mr-2"></i>Export</button>
+                </div>
+                <div class="glass rounded-xl overflow-hidden fade-in">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm" id="studentsTable">
+                            <thead class="table-header">
+                                <tr>
+                                    <th class="p-3 text-left">Reg No</th>
+                                    <th class="p-3 text-left">Name</th>
+                                    <th class="p-3 text-left">Class</th>
+                                    <th class="p-3 text-left">Gender</th>
+                                    <th class="p-3 text-left">Parent Contact</th>
+                                    <th class="p-3 text-left">Status</th>
+                                    <th class="p-3 text-left">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${db.students.map(s => `
+                                    <tr class="border-b hover:bg-green-50">
+                                        <td class="p-3 font-bold text-primary">${s.id}</td>
+                                        <td class="p-3">${s.surname} ${s.firstName}</td>
+                                        <td class="p-3"><span class="status-badge status-active">${s.class}</span></td>
+                                        <td class="p-3">${s.gender}</td>
+                                        <td class="p-3">${s.parentPhone}</td>
+                                        <td class="p-3"><span class="status-badge ${s.status === 'active' ? 'status-active' : 'status-pending'}">${s.status}</span></td>
+                                        <td class="p-3">
+                                            <button onclick="viewStudent('${s.id}')" class="text-blue-600 hover:text-blue-800 mr-2" title="View"><i class="fas fa-eye"></i></button>
+                                            <button onclick="editStudent('${s.id}')" class="text-green-600 hover:text-green-800 mr-2" title="Edit"><i class="fas fa-edit"></i></button>
+                                        </td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+        }
+
+        function searchStudents(query) {
+            const rows = document.querySelectorAll('#studentsTable tbody tr');
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(query.toLowerCase()) ? '' : 'none';
+            });
+        }
+
+        function searchStaff(query) {
+            const rows = document.querySelectorAll('#staffTable tbody tr');
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(query.toLowerCase()) ? '' : 'none';
+            });
+        }
+
+        function viewStudent(id) {
+            const student = db.students.find(s => s.id === id);
+            showToast(`Student: ${student.surname} ${student.firstName}, Class: ${student.class}`, 'info');
+        }
+
+        function editStudent(id) {
+            showToast('Edit student functionality - Click profile to view details', 'info');
+        }
+
+        function exportStudents() {
+            showToast('Export to Excel - Feature coming soon', 'info');
         }
 
         // ==================== PRINCIPAL DASHBOARD ====================
         function loadPrincipalDashboard() {
             setPageTitle('Principal Dashboard');
             document.getElementById('mainContent').innerHTML = `
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 fade-in">
                     <div class="glass rounded-xl p-6 card-hover">
                         <h3 class="text-lg font-bold text-primary mb-2">Teachers</h3>
                         <p class="text-3xl font-bold">${db.staff.filter(s => s.role === 'teacher').length}</p>
@@ -747,7 +2179,7 @@
                     </div>
                 </div>
                 
-                <div class="glass rounded-xl p-6">
+                <div class="glass rounded-xl p-6 fade-in">
                     <h3 class="text-lg font-bold text-primary mb-4">Quick Actions</h3>
                     <div class="grid md:grid-cols-3 gap-4">
                         <button onclick="manageTeachers()" class="p-4 bg-green-50 rounded-lg hover:bg-green-100 transition text-left">
@@ -774,12 +2206,12 @@
             setPageTitle('Manage Teachers');
             const teachers = db.staff.filter(s => s.role === 'teacher');
             document.getElementById('mainContent').innerHTML = `
-                <div class="flex justify-between mb-6">
+                <div class="flex justify-between mb-6 fade-in">
                     <button onclick="showAddTeacherModal()" class="btn-primary px-6 py-2 rounded-lg">
                         <i class="fas fa-plus mr-2"></i>Add Teacher
                     </button>
                 </div>
-                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 fade-in">
                     ${teachers.map(t => `
                         <div class="glass rounded-xl p-6 card-hover">
                             <div class="flex items-center space-x-4 mb-4">
@@ -801,7 +2233,7 @@
                                 <button onclick="deleteStaff('${t.id}')" class="text-red-600 hover:text-red-800 text-sm"><i class="fas fa-trash mr-1"></i>Delete</button>
                             </div>
                         </div>
-                    `).join('')}
+                    `).join('') || '<p class="col-span-3 text-center text-gray-500">No teachers found</p>'}
                 </div>
             `;
         }
@@ -809,16 +2241,17 @@
         function showAddTeacherModal() {
             showAddStaffModal();
             setTimeout(() => {
-                document.querySelector('select[name="role"]').value = 'teacher';
+                const roleSelect = document.querySelector('select[name="role"]');
+                if (roleSelect) roleSelect.value = 'teacher';
             }, 100);
         }
 
         function classTransfers() {
             setPageTitle('Class Transfers & Promotion');
             document.getElementById('mainContent').innerHTML = `
-                <div class="glass rounded-xl p-6 mb-6">
+                <div class="glass rounded-xl p-6 mb-6 fade-in">
                     <h3 class="text-lg font-bold text-primary mb-4">End of Session Promotion</h3>
-                    <p class="text-gray-600 mb-4">Select the current session and term to promote students to the next class. This action is typically done at the end of Third Term.</p>
+                    <p class="text-gray-600 mb-4">Select the current session and term to promote students to the next class.</p>
                     
                     <div class="grid md:grid-cols-3 gap-4 mb-6">
                         <select id="transferSession" class="input-field px-4 py-2 rounded-lg">
@@ -836,11 +2269,11 @@
                     </div>
                     
                     <button onclick="executeTransfer()" class="btn-primary px-6 py-3 rounded-lg">
-                        <i class="fas fa-exchange-alt mr-2"></i>Promote Students to Next Class
+                        <i class="fas fa-exchange-alt mr-2"></i>Promote Students
                     </button>
                 </div>
                 
-                <div class="glass rounded-xl p-6">
+                <div class="glass rounded-xl p-6 fade-in">
                     <h3 class="text-lg font-bold text-primary mb-4">Individual Student Transfer</h3>
                     <div class="overflow-x-auto">
                         <table class="w-full text-sm">
@@ -881,7 +2314,7 @@
                 student.class = newClass;
                 student.lastPromotion = new Date().toISOString().split('T')[0];
                 saveData();
-                alert(`Student ${student.surname} ${student.firstName} moved to ${newClass}`);
+                showToast(`Student moved to ${newClass}`, 'success');
                 classTransfers();
             }
         }
@@ -891,13 +2324,13 @@
             const term = document.getElementById('transferTerm').value;
             
             if (!fromClass || term !== 'Third Term') {
-                alert('Please select a class and ensure it is Third Term before promoting students.');
+                showToast('Please select a class and ensure it is Third Term', 'error');
                 return;
             }
             
             const classIndex = db.classes.indexOf(fromClass);
             if (classIndex === db.classes.length - 1) {
-                alert('SSS 3 students cannot be promoted. They have graduated!');
+                showToast('SSS 3 students cannot be promoted!', 'error');
                 return;
             }
             
@@ -905,7 +2338,7 @@
             const studentsToPromote = db.students.filter(s => s.class === fromClass);
             
             if (studentsToPromote.length === 0) {
-                alert('No students found in selected class.');
+                showToast('No students found in selected class', 'error');
                 return;
             }
             
@@ -915,7 +2348,7 @@
                     s.lastPromotion = new Date().toISOString().split('T')[0];
                 });
                 saveData();
-                alert(`Successfully promoted ${studentsToPromote.length} students to ${nextClass}`);
+                showToast(`Promoted ${studentsToPromote.length} students to ${nextClass}`, 'success');
                 classTransfers();
             }
         }
@@ -928,13 +2361,12 @@
             const pendingDiscipline = db.discipline.filter(d => d.status === 'pending').length;
             
             document.getElementById('mainContent').innerHTML = `
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 fade-in">
                     <div class="glass rounded-xl p-6 card-hover border-l-4 border-primary">
                         <div class="flex justify-between items-start">
                             <div>
                                 <p class="text-gray-500 text-sm">Today's Attendance</p>
                                 <h3 class="text-3xl font-bold text-primary">${todayAttendance}</h3>
-                                <p class="text-xs text-gray-500">Students present</p>
                             </div>
                             <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center text-primary">
                                 <i class="fas fa-user-check text-xl"></i>
@@ -946,7 +2378,6 @@
                             <div>
                                 <p class="text-gray-500 text-sm">Pending Discipline</p>
                                 <h3 class="text-3xl font-bold text-red-600">${pendingDiscipline}</h3>
-                                <p class="text-xs text-gray-500">Cases to review</p>
                             </div>
                             <div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center text-red-600">
                                 <i class="fas fa-exclamation-triangle text-xl"></i>
@@ -958,7 +2389,6 @@
                             <div>
                                 <p class="text-gray-500 text-sm">Active Assignments</p>
                                 <h3 class="text-3xl font-bold text-blue-600">${db.assignments.filter(a => new Date(a.dueDate) >= new Date()).length}</h3>
-                                <p class="text-xs text-gray-500">Currently ongoing</p>
                             </div>
                             <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center text-blue-600">
                                 <i class="fas fa-tasks text-xl"></i>
@@ -967,7 +2397,7 @@
                     </div>
                 </div>
 
-                <div class="grid md:grid-cols-2 gap-6">
+                <div class="grid md:grid-cols-2 gap-6 fade-in">
                     <div class="glass rounded-xl p-6">
                         <h3 class="text-lg font-bold text-primary mb-4">Quick Actions</h3>
                         <div class="space-y-3">
@@ -1024,7 +2454,7 @@
             const today = new Date().toISOString().split('T')[0];
             
             document.getElementById('mainContent').innerHTML = `
-                <div class="glass rounded-xl p-6 mb-6">
+                <div class="glass rounded-xl p-6 mb-6 fade-in">
                     <div class="flex justify-between items-center mb-4">
                         <h3 class="text-lg font-bold text-primary">Daily Attendance - ${today}</h3>
                         <div class="flex gap-2">
@@ -1037,7 +2467,7 @@
                     </div>
                 </div>
                 
-                <div id="attendanceSheet" class="glass rounded-xl overflow-hidden">
+                <div id="attendanceSheet" class="glass rounded-xl overflow-hidden fade-in">
                     <p class="p-8 text-center text-gray-500">Select a class to load attendance sheet</p>
                 </div>
             `;
@@ -1093,6 +2523,11 @@
             const today = new Date().toISOString().split('T')[0];
             const selectedClass = document.getElementById('attendanceClass').value;
             
+            if (!selectedClass) {
+                showToast('Please select a class', 'error');
+                return;
+            }
+            
             document.querySelectorAll('tbody tr').forEach(row => {
                 const studentId = row.dataset.student;
                 const status = document.querySelector(`.attendance-status[data-student="${studentId}"]`).value;
@@ -1117,14 +2552,13 @@
             });
             
             saveData();
-            alert('Attendance saved successfully!');
-            studentAttendance();
+            showToast('Attendance saved successfully!', 'success');
         }
 
         function disciplineRecords() {
             setPageTitle('Discipline Records');
             document.getElementById('mainContent').innerHTML = `
-                <div class="flex justify-between mb-6">
+                <div class="flex justify-between mb-6 fade-in">
                     <button onclick="showAddDisciplineModal()" class="btn-primary px-6 py-2 rounded-lg">
                         <i class="fas fa-plus mr-2"></i>New Discipline Case
                     </button>
@@ -1135,7 +2569,7 @@
                     </select>
                 </div>
                 
-                <div class="glass rounded-xl overflow-hidden">
+                <div class="glass rounded-xl overflow-hidden fade-in">
                     <div class="overflow-x-auto">
                         <table class="w-full text-sm" id="disciplineTable">
                             <thead class="table-header">
@@ -1173,13 +2607,13 @@
 
         function showAddDisciplineModal() {
             const modal = document.createElement('div');
-            modal.className = 'fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4';
+            modal.className = 'fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 modal';
             modal.innerHTML = `
-                <div class="bg-white rounded-2xl max-w-lg w-full p-6">
-                    <div class="flex justify-between items-center mb-6">
-                        <h3 class="text-xl font-bold text-primary">New Discipline Case</h3>
-                        <button onclick="this.closest('.fixed').remove()" class="text-gray-500 hover:text-gray-700"><i class="fas fa-times text-xl"></i></button>
-                    </div>
+                <div class="bg-white rounded-2xl max-w-lg w-full p-6 relative">
+                    <button onclick="this.closest('.fixed').remove()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                    <h3 class="text-xl font-bold text-primary mb-6">New Discipline Case</h3>
                     <form onsubmit="saveDiscipline(event)" class="space-y-4">
                         <div>
                             <label class="block text-sm font-medium mb-1">Student</label>
@@ -1224,9 +2658,9 @@
             };
             db.discipline.push(newCase);
             saveData();
-            alert('Discipline case recorded successfully!');
+            showToast('Discipline case recorded successfully!', 'success');
             disciplineRecords();
-            document.querySelector('.fixed').remove();
+            document.querySelector('.modal').remove();
         }
 
         function resolveDiscipline(id) {
@@ -1236,6 +2670,7 @@
                 caseItem.resolvedDate = new Date().toISOString().split('T')[0];
                 caseItem.resolvedBy = db.currentUser.id;
                 saveData();
+                showToast('Case resolved', 'success');
                 disciplineRecords();
             }
         }
@@ -1255,7 +2690,7 @@
         function manageTimetable() {
             setPageTitle('Class Timetable');
             document.getElementById('mainContent').innerHTML = `
-                <div class="flex justify-between mb-6">
+                <div class="flex justify-between mb-6 fade-in">
                     <select id="timetableClass" class="input-field px-4 py-2 rounded-lg" onchange="loadTimetable()">
                         <option value="">Select Class</option>
                         ${db.classes.map(c => `<option value="${c}">${c}</option>`).join('')}
@@ -1265,7 +2700,7 @@
                     </button>
                 </div>
                 
-                <div id="timetableContainer" class="glass rounded-xl p-6">
+                <div id="timetableContainer" class="glass rounded-xl p-6 fade-in">
                     <p class="text-center text-gray-500 py-8">Select a class to view timetable</p>
                 </div>
             `;
@@ -1302,18 +2737,18 @@
         function showAddTimetableModal() {
             const selectedClass = document.getElementById('timetableClass').value;
             if (!selectedClass) {
-                alert('Please select a class first');
+                showToast('Please select a class first', 'error');
                 return;
             }
             
             const modal = document.createElement('div');
-            modal.className = 'fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4';
+            modal.className = 'fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 modal';
             modal.innerHTML = `
-                <div class="bg-white rounded-2xl max-w-md w-full p-6">
-                    <div class="flex justify-between items-center mb-6">
-                        <h3 class="text-xl font-bold text-primary">Add Timetable Period</h3>
-                        <button onclick="this.closest('.fixed').remove()" class="text-gray-500 hover:text-gray-700"><i class="fas fa-times text-xl"></i></button>
-                    </div>
+                <div class="bg-white rounded-2xl max-w-md w-full p-6 relative">
+                    <button onclick="this.closest('.fixed').remove()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                    <h3 class="text-xl font-bold text-primary mb-6">Add Timetable Period</h3>
                     <form onsubmit="saveTimetable(event)" class="space-y-4">
                         <input type="hidden" name="class" value="${selectedClass}">
                         <div>
@@ -1329,15 +2764,7 @@
                         <div>
                             <label class="block text-sm font-medium mb-1">Time Period</label>
                             <select name="time" class="input-field w-full px-3 py-2 rounded-lg" required>
-                                <option value="8:00-8:40">8:00-8:40</option>
-                                <option value="8:40-9:20">8:40-9:20</option>
-                                <option value="9:20-10:00">9:20-10:00</option>
-                                <option value="10:00-10:40">10:00-10:40</option>
-                                <option value="10:40-11:20">10:40-11:20</option>
-                                <option value="11:20-12:00">11:20-12:00</option>
-                                <option value="12:00-12:40">12:00-12:40</option>
-                                <option value="12:40-1:20">12:40-1:20</option>
-                                <option value="1:20-2:00">1:20-2:00</option>
+                                ${['8:00-8:40', '8:40-9:20', '9:20-10:00', '10:00-10:40', '10:40-11:20', '11:20-12:00', '12:00-12:40', '12:40-1:20', '1:20-2:00'].map(t => `<option value="${t}">${t}</option>`).join('')}
                             </select>
                         </div>
                         <div>
@@ -1370,15 +2797,15 @@
             };
             db.timetable.push(newPeriod);
             saveData();
-            alert('Timetable period added!');
+            showToast('Timetable period added!', 'success');
             loadTimetable();
-            document.querySelector('.fixed').remove();
+            document.querySelector('.modal').remove();
         }
 
         function manageAssignments() {
             setPageTitle('Assignments');
             document.getElementById('mainContent').innerHTML = `
-                <div class="flex justify-between mb-6">
+                <div class="flex justify-between mb-6 fade-in">
                     <button onclick="showAddAssignmentModal()" class="btn-primary px-6 py-2 rounded-lg">
                         <i class="fas fa-plus mr-2"></i>New Assignment
                     </button>
@@ -1389,7 +2816,7 @@
                     </select>
                 </div>
                 
-                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6" id="assignmentsGrid">
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 fade-in" id="assignmentsGrid">
                     ${db.assignments.slice().reverse().map(a => `
                         <div class="glass rounded-xl p-6 card-hover ${new Date(a.dueDate) < new Date() ? 'opacity-60' : ''}" data-status="${new Date(a.dueDate) >= new Date() ? 'active' : 'completed'}">
                             <div class="flex justify-between items-start mb-4">
@@ -1416,13 +2843,13 @@
 
         function showAddAssignmentModal() {
             const modal = document.createElement('div');
-            modal.className = 'fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4';
+            modal.className = 'fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 modal';
             modal.innerHTML = `
-                <div class="bg-white rounded-2xl max-w-lg w-full p-6">
-                    <div class="flex justify-between items-center mb-6">
-                        <h3 class="text-xl font-bold text-primary">New Assignment</h3>
-                        <button onclick="this.closest('.fixed').remove()" class="text-gray-500 hover:text-gray-700"><i class="fas fa-times text-xl"></i></button>
-                    </div>
+                <div class="bg-white rounded-2xl max-w-lg w-full p-6 relative">
+                    <button onclick="this.closest('.fixed').remove()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                    <h3 class="text-xl font-bold text-primary mb-6">New Assignment</h3>
                     <form onsubmit="saveAssignment(event)" class="space-y-4">
                         <div>
                             <label class="block text-sm font-medium mb-1">Title</label>
@@ -1470,9 +2897,9 @@
             };
             db.assignments.push(newAssignment);
             saveData();
-            alert('Assignment created successfully!');
+            showToast('Assignment created successfully!', 'success');
             manageAssignments();
-            document.querySelector('.fixed').remove();
+            document.querySelector('.modal').remove();
         }
 
         function filterAssignments() {
@@ -1488,13 +2915,14 @@
         }
 
         function viewSubmissions(assignmentId) {
-            alert('Assignment submissions - To be implemented with file upload system');
+            showToast('Assignment submissions - Feature coming soon', 'info');
         }
 
         function deleteAssignment(id) {
             if (confirm('Delete this assignment?')) {
                 db.assignments = db.assignments.filter(a => a.id !== id);
                 saveData();
+                showToast('Assignment deleted', 'success');
                 manageAssignments();
             }
         }
@@ -1506,7 +2934,7 @@
             const primaryTeachers = db.staff.filter(s => s.role === 'teacher' && s.classTeacher && (s.classTeacher.includes('Primary') || s.classTeacher.includes('Nursery'))).length;
             
             document.getElementById('mainContent').innerHTML = `
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 fade-in">
                     <div class="glass rounded-xl p-6 card-hover border-l-4 border-primary">
                         <div class="flex justify-between items-start">
                             <div>
@@ -1534,7 +2962,6 @@
                             <div>
                                 <p class="text-gray-500 text-sm">Classes</p>
                                 <h3 class="text-3xl font-bold text-blue-600">8</h3>
-                                <p class="text-xs text-gray-500">Nursery to Primary 6</p>
                             </div>
                             <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center text-blue-600">
                                 <i class="fas fa-school text-xl"></i>
@@ -1543,7 +2970,7 @@
                     </div>
                 </div>
 
-                <div class="grid md:grid-cols-2 gap-6">
+                <div class="grid md:grid-cols-2 gap-6 fade-in">
                     <div class="glass rounded-xl p-6">
                         <h3 class="text-lg font-bold text-primary mb-4">Primary Section Overview</h3>
                         <div class="space-y-4">
@@ -1601,7 +3028,7 @@
             const primaryClasses = ['Nursery 1', 'Nursery 2', 'Primary 1', 'Primary 2', 'Primary 3', 'Primary 4', 'Primary 5', 'Primary 6'];
             
             document.getElementById('mainContent').innerHTML = `
-                <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6 fade-in">
                     ${primaryClasses.map(c => {
                         const students = db.students.filter(s => s.class === c);
                         const teacher = db.staff.find(s => s.classTeacher === c);
@@ -1626,16 +3053,17 @@
         function assignTeacher(className) {
             const availableTeachers = db.staff.filter(s => s.role === 'teacher' && !s.classTeacher);
             if (availableTeachers.length === 0) {
-                alert('No available teachers. Please add more teachers first.');
+                showToast('No available teachers', 'error');
                 return;
             }
             
-            const teacherName = prompt('Select teacher:\n' + availableTeachers.map((t, i) => `${i + 1}. ${t.surname} ${t.firstName}`).join('\n') + '\n\nEnter number:');
-            if (teacherName) {
-                const index = parseInt(teacherName) - 1;
+            const teacherIndex = prompt('Select teacher:\n' + availableTeachers.map((t, i) => `${i + 1}. ${t.surname} ${t.firstName}`).join('\n') + '\n\nEnter number:');
+            if (teacherIndex) {
+                const index = parseInt(teacherIndex) - 1;
                 if (availableTeachers[index]) {
                     availableTeachers[index].classTeacher = className;
                     saveData();
+                    showToast('Teacher assigned successfully', 'success');
                     primarySection();
                 }
             }
@@ -1652,7 +3080,7 @@
             const primaryClasses = ['Nursery 1', 'Nursery 2', 'Primary 1', 'Primary 2', 'Primary 3', 'Primary 4', 'Primary 5', 'Primary 6'];
             
             document.getElementById('mainContent').innerHTML = `
-                <div class="glass rounded-xl p-6 mb-6">
+                <div class="glass rounded-xl p-6 mb-6 fade-in">
                     <h3 class="text-lg font-bold text-primary mb-4">Attendance Summary - ${today}</h3>
                     <div class="grid md:grid-cols-4 gap-4">
                         ${primaryClasses.map(c => {
@@ -1680,7 +3108,7 @@
         function manageCurriculum() {
             setPageTitle('Primary Curriculum');
             document.getElementById('mainContent').innerHTML = `
-                <div class="glass rounded-xl p-6">
+                <div class="glass rounded-xl p-6 fade-in">
                     <h3 class="text-lg font-bold text-primary mb-4">Primary School Curriculum</h3>
                     <div class="grid md:grid-cols-2 gap-6">
                         <div>
@@ -1701,18 +3129,17 @@
         }
 
         function manageClassTeachers() {
-            primarySection(); // Reuse the same view
+            primarySection();
         }
 
         // ==================== EXAM OFFICER DASHBOARD ====================
         function loadExamOfficerDashboard() {
             setPageTitle('Exam Officer Dashboard');
             const totalResults = db.results.length;
-            const pendingResults = db.students.length * 10 - totalResults; // Estimate
             const examsScheduled = db.calendar.filter(c => c.type === 'exam' && new Date(c.date) >= new Date()).length;
             
             document.getElementById('mainContent').innerHTML = `
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 fade-in">
                     <div class="glass rounded-xl p-6 card-hover border-l-4 border-primary">
                         <div class="flex justify-between items-start">
                             <div>
@@ -1728,7 +3155,7 @@
                         <div class="flex justify-between items-start">
                             <div>
                                 <p class="text-gray-500 text-sm">Pending Results</p>
-                                <h3 class="text-3xl font-bold text-yellow-600">${Math.max(0, pendingResults)}</h3>
+                                <h3 class="text-3xl font-bold text-yellow-600">${Math.max(0, db.students.length * 5 - totalResults)}</h3>
                             </div>
                             <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center text-yellow-600">
                                 <i class="fas fa-clock text-xl"></i>
@@ -1748,7 +3175,7 @@
                     </div>
                 </div>
 
-                <div class="grid md:grid-cols-2 gap-6">
+                <div class="grid md:grid-cols-2 gap-6 fade-in">
                     <div class="glass rounded-xl p-6">
                         <h3 class="text-lg font-bold text-primary mb-4">Quick Actions</h3>
                         <div class="space-y-3">
@@ -1797,7 +3224,7 @@
         function examSchedule() {
             setPageTitle('Exam Schedule');
             document.getElementById('mainContent').innerHTML = `
-                <div class="flex justify-between mb-6">
+                <div class="flex justify-between mb-6 fade-in">
                     <button onclick="showAddExamModal()" class="btn-primary px-6 py-2 rounded-lg">
                         <i class="fas fa-plus mr-2"></i>Schedule Exam
                     </button>
@@ -1807,7 +3234,7 @@
                     </select>
                 </div>
                 
-                <div class="glass rounded-xl overflow-hidden">
+                <div class="glass rounded-xl overflow-hidden fade-in">
                     <div class="overflow-x-auto">
                         <table class="w-full text-sm">
                             <thead class="table-header">
@@ -1844,13 +3271,13 @@
 
         function showAddExamModal() {
             const modal = document.createElement('div');
-            modal.className = 'fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4';
+            modal.className = 'fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 modal';
             modal.innerHTML = `
-                <div class="bg-white rounded-2xl max-w-lg w-full p-6">
-                    <div class="flex justify-between items-center mb-6">
-                        <h3 class="text-xl font-bold text-primary">Schedule Exam</h3>
-                        <button onclick="this.closest('.fixed').remove()" class="text-gray-500 hover:text-gray-700"><i class="fas fa-times text-xl"></i></button>
-                    </div>
+                <div class="bg-white rounded-2xl max-w-lg w-full p-6 relative">
+                    <button onclick="this.closest('.fixed').remove()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                    <h3 class="text-xl font-bold text-primary mb-6">Schedule Exam</h3>
                     <form onsubmit="saveExam(event)" class="space-y-4">
                         <div>
                             <label class="block text-sm font-medium mb-1">Subject</label>
@@ -1904,15 +3331,16 @@
             };
             db.calendar.push(newExam);
             saveData();
-            alert('Exam scheduled successfully!');
+            showToast('Exam scheduled successfully!', 'success');
             examSchedule();
-            document.querySelector('.fixed').remove();
+            document.querySelector('.modal').remove();
         }
 
         function deleteExam(id) {
             if (confirm('Delete this exam schedule?')) {
                 db.calendar = db.calendar.filter(c => c.id !== id);
                 saveData();
+                showToast('Exam deleted', 'success');
                 examSchedule();
             }
         }
@@ -1920,7 +3348,7 @@
         function resultsAnalysis() {
             setPageTitle('Results Analysis');
             document.getElementById('mainContent').innerHTML = `
-                <div class="grid md:grid-cols-2 gap-6 mb-6">
+                <div class="grid md:grid-cols-2 gap-6 mb-6 fade-in">
                     <div class="glass rounded-xl p-6">
                         <h3 class="text-lg font-bold text-primary mb-4">Performance by Class</h3>
                         <div class="space-y-4">
@@ -1971,7 +3399,7 @@
         function exportResults() {
             setPageTitle('Export Results');
             document.getElementById('mainContent').innerHTML = `
-                <div class="glass rounded-xl p-6 max-w-2xl mx-auto">
+                <div class="glass rounded-xl p-6 max-w-2xl mx-auto fade-in">
                     <h3 class="text-lg font-bold text-primary mb-6">Export Results</h3>
                     <div class="space-y-4">
                         <div>
@@ -2007,13 +3435,13 @@
         }
 
         function downloadResults(format) {
-            alert(`Results download in ${format.toUpperCase()} format - This would generate and download the file in a production environment.`);
+            showToast(`Results download in ${format.toUpperCase()} format - Feature coming soon`, 'info');
         }
 
         function manageTranscripts() {
             setPageTitle('Student Transcripts');
             document.getElementById('mainContent').innerHTML = `
-                <div class="glass rounded-xl p-6 mb-6">
+                <div class="glass rounded-xl p-6 mb-6 fade-in">
                     <div class="flex gap-4">
                         <input type="text" id="transcriptStudentId" placeholder="Enter Student Reg No" class="input-field px-4 py-2 rounded-lg flex-1">
                         <button onclick="generateTranscript()" class="btn-primary px-6 py-2 rounded-lg">Generate Transcript</button>
@@ -2028,14 +3456,14 @@
             const student = db.students.find(s => s.id === studentId);
             
             if (!student) {
-                alert('Student not found');
+                showToast('Student not found', 'error');
                 return;
             }
             
             const studentResults = db.results.filter(r => r.studentId === studentId);
             
             document.getElementById('transcriptContainer').innerHTML = `
-                <div class="glass rounded-xl p-8 max-w-4xl mx-auto report-card">
+                <div class="glass rounded-xl p-8 max-w-4xl mx-auto report-card fade-in">
                     <div class="text-center mb-6 border-b-2 border-primary pb-4">
                         <h2 class="text-2xl font-bold text-primary">IBRA FOUNDATION SCHOOL</h2>
                         <p class="text-lg font-semibold">Official Academic Transcript</p>
@@ -2087,12 +3515,12 @@
                         <p><strong>Principal's Signature:</strong> _________________________</p>
                         <p class="mt-2"><strong>Date Issued:</strong> ${new Date().toLocaleDateString()}</p>
                     </div>
-                </div>
-                
-                <div class="flex justify-center mt-6">
-                    <button onclick="printTranscript()" class="btn-primary px-6 py-2 rounded-lg">
-                        <i class="fas fa-print mr-2"></i>Print Transcript
-                    </button>
+                    
+                    <div class="flex justify-center mt-6 no-print">
+                        <button onclick="printTranscript()" class="btn-primary px-6 py-2 rounded-lg">
+                            <i class="fas fa-print mr-2"></i>Print Transcript
+                        </button>
+                    </div>
                 </div>
             `;
         }
@@ -2108,7 +3536,7 @@
             const todayPayments = db.payments.filter(p => p.date === today).reduce((sum, p) => sum + p.amount, 0);
             
             document.getElementById('mainContent').innerHTML = `
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 fade-in">
                     <div class="glass rounded-xl p-6 card-hover">
                         <h3 class="text-lg font-bold text-primary mb-2">Today's Collection</h3>
                         <p class="text-3xl font-bold">₦${todayPayments.toLocaleString()}</p>
@@ -2126,7 +3554,7 @@
                     </div>
                 </div>
                 
-                <div class="grid md:grid-cols-2 gap-6">
+                <div class="grid md:grid-cols-2 gap-6 fade-in">
                     <button onclick="manageFeePayments()" class="glass rounded-xl p-6 card-hover text-left">
                         <i class="fas fa-money-check-alt text-4xl text-primary mb-4"></i>
                         <h3 class="text-xl font-bold mb-2">Manage Fee Payments</h3>
@@ -2135,7 +3563,7 @@
                     <button onclick="paySalaries()" class="glass rounded-xl p-6 card-hover text-left">
                         <i class="fas fa-hand-holding-usd text-4xl text-secondary mb-4"></i>
                         <h3 class="text-xl font-bold mb-2">Pay Staff Salaries</h3>
-                        <p class="text-gray-600">Process monthly salary payments to staff accounts</p>
+                        <p class="text-gray-600">Process monthly salary payments</p>
                     </button>
                 </div>
             `;
@@ -2144,7 +3572,7 @@
         function manageFeePayments() {
             setPageTitle('Fee Payments');
             document.getElementById('mainContent').innerHTML = `
-                <div class="glass rounded-xl p-6 mb-6">
+                <div class="glass rounded-xl p-6 mb-6 fade-in">
                     <h3 class="text-lg font-bold text-primary mb-4">Record Manual Payment</h3>
                     <form onsubmit="recordManualPayment(event)" class="grid md:grid-cols-4 gap-4">
                         <input type="text" id="payStudentId" placeholder="Student Reg No" class="input-field px-4 py-2 rounded-lg" required>
@@ -2159,7 +3587,7 @@
                     </form>
                 </div>
                 
-                <div class="glass rounded-xl overflow-hidden">
+                <div class="glass rounded-xl overflow-hidden fade-in">
                     <div class="p-4 border-b flex justify-between items-center">
                         <h3 class="text-lg font-bold text-primary">Recent Payments</h3>
                         <input type="text" placeholder="Search..." class="input-field px-3 py-1 rounded-lg text-sm" onkeyup="filterPayments(this.value)">
@@ -2203,7 +3631,7 @@
             const student = db.students.find(s => s.id === studentId);
             
             if (!student) {
-                alert('Student not found!');
+                showToast('Student not found!', 'error');
                 return;
             }
             
@@ -2220,7 +3648,7 @@
             
             db.payments.push(payment);
             saveData();
-            alert('Payment recorded successfully!');
+            showToast('Payment recorded successfully!', 'success');
             manageFeePayments();
         }
 
@@ -2237,12 +3665,12 @@
             const currentMonth = new Date().toLocaleString('default', { month: 'long', year: 'numeric' });
             
             document.getElementById('mainContent').innerHTML = `
-                <div class="glass rounded-xl p-6 mb-6">
+                <div class="glass rounded-xl p-6 mb-6 fade-in">
                     <h3 class="text-lg font-bold text-primary mb-2">Salary Payment - ${currentMonth}</h3>
-                    <p class="text-gray-600 mb-4">Process payments directly to staff bank accounts via Paystack Transfer</p>
+                    <p class="text-gray-600 mb-4">Process payments directly to staff bank accounts</p>
                 </div>
                 
-                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 fade-in">
                     ${db.staff.map(s => {
                         const paidThisMonth = db.salaryPayments.some(p => 
                             p.staffId === s.id && 
@@ -2295,7 +3723,7 @@
             const currentMonth = new Date().toLocaleString('default', { month: 'long', year: 'numeric' });
             
             const handler = PaystackPop.setup({
-                key: 'pk_test_your_key_here',
+                key: 'pk_test_a14fbb26a424c4d32650cf93389ced8e4d1a1b87',
                 email: staff.email || 'salary@ibrafoundation.edu',
                 amount: amount * 100,
                 currency: 'NGN',
@@ -2334,11 +3762,11 @@
                     };
                     db.salaryPayments.push(payment);
                     saveData();
-                    alert(`Salary payment successful!\nReference: ${response.reference}`);
+                    showToast(`Salary payment successful! Ref: ${response.reference}`, 'success');
                     paySalaries();
                 },
                 onClose: function() {
-                    alert('Payment cancelled');
+                    showToast('Payment cancelled', 'info');
                 }
             });
             handler.openIframe();
@@ -2346,58 +3774,39 @@
 
         function manageInvoices() {
             setPageTitle('Invoices');
-            document.getElementById('mainContent').innerHTML = `
-                <div class="glass rounded-xl p-6">
-                    <h3 class="text-lg font-bold text-primary mb-4">Fee Invoices</h3>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-sm">
-                            <thead class="table-header">
-                                <tr>
-                                    <th class="p-3 text-left">Invoice #</th>
-                                    <th class="p-3 text-left">Student</th>
-                                    <th class="p-3 text-left">Description</th>
-                                    <th class="p-3 text-left">Amount</th>
-                                    <th class="p-3 text-left">Due Date</th>
-                                    <th class="p-3 text-left">Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr class="border-b hover:bg-green-50">
-                                    <td class="p-3">INV-001</td>
-                                    <td class="p-3">John Doe</td>
-                                    <td class="p-3">First Term School Fees</td>
-                                    <td class="p-3">₦50,000</td>
-                                    <td class="p-3">2024-01-15</td>
-                                    <td class="p-3"><span class="status-badge status-paid">Paid</span></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            `;
+            showToast('Invoice management - Feature coming soon', 'info');
         }
 
         function manageBudget() {
             setPageTitle('Budget Management');
+            const totalRevenue = db.payments.reduce((sum, p) => sum + p.amount, 0);
+            const totalExpenses = db.salaryPayments.reduce((sum, p) => sum + p.amount, 0);
+            
             document.getElementById('mainContent').innerHTML = `
-                <div class="glass rounded-xl p-6">
+                <div class="glass rounded-xl p-6 fade-in">
                     <h3 class="text-lg font-bold text-primary mb-4">Annual Budget</h3>
                     <div class="grid md:grid-cols-2 gap-6">
                         <div class="p-4 bg-green-50 rounded-lg">
                             <h4 class="font-semibold text-primary mb-2">Income</h4>
-                            <p class="text-2xl font-bold">₦${db.payments.reduce((sum, p) => sum + p.amount, 0).toLocaleString()}</p>
+                            <p class="text-2xl font-bold">₦${totalRevenue.toLocaleString()}</p>
                         </div>
                         <div class="p-4 bg-red-50 rounded-lg">
                             <h4 class="font-semibold text-red-600 mb-2">Expenses</h4>
-                            <p class="text-2xl font-bold">₦${db.salaryPayments.reduce((sum, p) => sum + p.amount, 0).toLocaleString()}</p>
+                            <p class="text-2xl font-bold">₦${totalExpenses.toLocaleString()}</p>
                         </div>
+                    </div>
+                    <div class="mt-6">
+                        <h4 class="font-semibold mb-3">Balance</h4>
+                        <p class="text-3xl font-bold ${totalRevenue >= totalExpenses ? 'text-green-600' : 'text-red-600'}">
+                            ₦${(totalRevenue - totalExpenses).toLocaleString()}
+                        </p>
                     </div>
                 </div>
             `;
         }
 
         function paymentHistory() {
-            manageFeePayments(); // Reuse the same view
+            manageFeePayments();
         }
 
         // ==================== TEACHER DASHBOARD ====================
@@ -2407,7 +3816,7 @@
             const myStudents = db.students.filter(s => s.class === myClass);
             
             document.getElementById('mainContent').innerHTML = `
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 fade-in">
                     <div class="glass rounded-xl p-6 card-hover">
                         <h3 class="text-lg font-bold text-primary mb-2">My Class</h3>
                         <p class="text-3xl font-bold">${myClass || 'Not Assigned'}</p>
@@ -2425,7 +3834,7 @@
                     </div>
                 </div>
                 
-                <div class="grid md:grid-cols-2 gap-6">
+                <div class="grid md:grid-cols-2 gap-6 fade-in">
                     <button onclick="recordScores()" class="glass rounded-xl p-6 card-hover text-left">
                         <i class="fas fa-pen text-4xl text-primary mb-4"></i>
                         <h3 class="text-xl font-bold mb-2">Record CA & Exams</h3>
@@ -2446,7 +3855,7 @@
             const students = db.students.filter(s => s.class === myClass);
             
             document.getElementById('mainContent').innerHTML = `
-                <div class="glass rounded-xl p-6">
+                <div class="glass rounded-xl p-6 fade-in">
                     <h3 class="text-lg font-bold text-primary mb-4">${myClass} - Student List</h3>
                     <div class="overflow-x-auto">
                         <table class="w-full text-sm">
@@ -2482,7 +3891,7 @@
 
         function viewStudentProfile(studentId) {
             const student = db.students.find(s => s.id === studentId);
-            alert(`Student Profile:\n\nName: ${student.surname} ${student.firstName}\nReg No: ${student.id}\nClass: ${student.class}\nDOB: ${student.dob}\nAddress: ${student.address}\nParent: ${student.parentName}\nPhone: ${student.parentPhone}`);
+            showToast(`Student: ${student.surname} ${student.firstName}, Class: ${student.class}`, 'info');
         }
 
         function recordScores() {
@@ -2491,7 +3900,7 @@
             const classTeacher = teacher.classTeacher;
             
             if (!classTeacher) {
-                alert('You are not assigned as a class teacher!');
+                showToast('You are not assigned as a class teacher!', 'error');
                 return;
             }
             
@@ -2499,7 +3908,7 @@
             const subjects = getSubjectsForClass(classTeacher);
             
             document.getElementById('mainContent').innerHTML = `
-                <div class="glass rounded-xl p-6 mb-6">
+                <div class="glass rounded-xl p-6 mb-6 fade-in">
                     <div class="grid md:grid-cols-4 gap-4">
                         <select id="scoreSession" class="input-field px-4 py-2 rounded-lg">
                             <option value="">Select Session</option>
@@ -2517,7 +3926,7 @@
                     </div>
                 </div>
                 
-                <div id="scoreSheetContainer" class="glass rounded-xl overflow-hidden">
+                <div id="scoreSheetContainer" class="glass rounded-xl overflow-hidden fade-in">
                     <p class="p-8 text-center text-gray-500">Select session, term, and subject to load score sheet</p>
                 </div>
             `;
@@ -2535,7 +3944,7 @@
             const subject = document.getElementById('scoreSubject').value;
             
             if (!session || !term || !subject) {
-                alert('Please select all fields');
+                showToast('Please select all fields', 'error');
                 return;
             }
             
@@ -2661,7 +4070,7 @@
             });
             
             saveData();
-            alert('All scores saved successfully!');
+            showToast('All scores saved successfully!', 'success');
         }
 
         function generateReportCards() {
@@ -2669,7 +4078,7 @@
             const teacher = db.currentUser;
             
             document.getElementById('mainContent').innerHTML = `
-                <div class="glass rounded-xl p-6 mb-6">
+                <div class="glass rounded-xl p-6 mb-6 fade-in">
                     <div class="grid md:grid-cols-4 gap-4">
                         <select id="reportSession" class="input-field px-4 py-2 rounded-lg">
                             <option value="">Select Session</option>
@@ -2698,7 +4107,7 @@
             const studentId = document.getElementById('reportStudent').value;
             
             if (!session || !term || !studentId) {
-                alert('Please select all fields');
+                showToast('Please select all fields', 'error');
                 return;
             }
             
@@ -2713,7 +4122,7 @@
             const average = results.length > 0 ? (totalScore / results.length).toFixed(2) : 0;
             
             document.getElementById('reportCardPreview').innerHTML = `
-                <div class="glass rounded-xl p-8 max-w-4xl mx-auto report-card" id="printableReport">
+                <div class="glass rounded-xl p-8 max-w-4xl mx-auto report-card fade-in" id="printableReport">
                     <div class="text-center mb-6 border-b-2 border-primary pb-4">
                         <div class="w-20 h-20 bg-gradient-to-br from-primary to-secondary rounded-full mx-auto mb-4 flex items-center justify-center text-white text-3xl">
                             <i class="fas fa-graduation-cap"></i>
@@ -2794,7 +4203,7 @@
                     </div>
                 </div>
                 
-                <div class="flex justify-center space-x-4 mt-6 no-print">
+                <div class="flex justify-center space-x-4 mt-6 no-print fade-in">
                     <button onclick="printReportCard()" class="btn-primary px-6 py-2 rounded-lg">
                         <i class="fas fa-print mr-2"></i>Print Report Card
                     </button>
@@ -2806,14 +4215,7 @@
         }
 
         function getRemark(grade) {
-            const remarks = {
-                'A': 'Excellent',
-                'B': 'Very Good',
-                'C': 'Good',
-                'D': 'Pass',
-                'E': 'Fair',
-                'F': 'Fail'
-            };
+            const remarks = { 'A': 'Excellent', 'B': 'Very Good', 'C': 'Good', 'D': 'Pass', 'E': 'Fair', 'F': 'Fail' };
             return remarks[grade] || 'Fail';
         }
 
@@ -2859,23 +4261,23 @@
         }
 
         function downloadPDF() {
-            alert('PDF download - This would generate a PDF in production environment');
+            showToast('PDF download - Feature coming soon', 'info');
         }
 
         function takeAttendance() {
-            studentAttendance(); // Reuse Vice Principal's attendance function
+            studentAttendance();
         }
 
         function lessonNotes() {
             setPageTitle('Lesson Notes');
             document.getElementById('mainContent').innerHTML = `
-                <div class="flex justify-between mb-6">
+                <div class="flex justify-between mb-6 fade-in">
                     <button onclick="showAddLessonNoteModal()" class="btn-primary px-6 py-2 rounded-lg">
                         <i class="fas fa-plus mr-2"></i>New Lesson Note
                     </button>
                 </div>
                 
-                <div class="grid md:grid-cols-2 gap-6" id="lessonNotesGrid">
+                <div class="grid md:grid-cols-2 gap-6 fade-in" id="lessonNotesGrid">
                     ${db.lessonNotes.filter(n => n.teacherId === db.currentUser.id).slice().reverse().map(note => `
                         <div class="glass rounded-xl p-6 card-hover">
                             <div class="flex justify-between items-start mb-4">
@@ -2893,13 +4295,13 @@
 
         function showAddLessonNoteModal() {
             const modal = document.createElement('div');
-            modal.className = 'fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4';
+            modal.className = 'fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 modal';
             modal.innerHTML = `
-                <div class="bg-white rounded-2xl max-w-lg w-full p-6">
-                    <div class="flex justify-between items-center mb-6">
-                        <h3 class="text-xl font-bold text-primary">New Lesson Note</h3>
-                        <button onclick="this.closest('.fixed').remove()" class="text-gray-500 hover:text-gray-700"><i class="fas fa-times text-xl"></i></button>
-                    </div>
+                <div class="bg-white rounded-2xl max-w-lg w-full p-6 relative">
+                    <button onclick="this.closest('.fixed').remove()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                    <h3 class="text-xl font-bold text-primary mb-6">New Lesson Note</h3>
                     <form onsubmit="saveLessonNote(event)" class="space-y-4">
                         <div>
                             <label class="block text-sm font-medium mb-1">Topic</label>
@@ -2940,9 +4342,9 @@
             };
             db.lessonNotes.push(newNote);
             saveData();
-            alert('Lesson note saved!');
+            showToast('Lesson note saved!', 'success');
             lessonNotes();
-            document.querySelector('.fixed').remove();
+            document.querySelector('.modal').remove();
         }
 
         // ==================== STUDENT DASHBOARD ====================
@@ -2955,7 +4357,7 @@
             const balance = schoolFees - totalPaid;
             
             document.getElementById('mainContent').innerHTML = `
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 fade-in">
                     <div class="glass rounded-xl p-6 card-hover">
                         <h3 class="text-lg font-bold text-primary mb-2">My Class</h3>
                         <p class="text-3xl font-bold">${student.class}</p>
@@ -2973,7 +4375,7 @@
                     </div>
                 </div>
                 
-                <div class="grid md:grid-cols-2 gap-6">
+                <div class="grid md:grid-cols-2 gap-6 fade-in">
                     <button onclick="payFees()" class="glass rounded-xl p-6 card-hover text-left">
                         <i class="fas fa-credit-card text-4xl text-primary mb-4"></i>
                         <h3 class="text-xl font-bold mb-2">Pay School Fees</h3>
@@ -2986,7 +4388,7 @@
                     </button>
                 </div>
                 
-                <div class="glass rounded-xl p-6 mt-6">
+                <div class="glass rounded-xl p-6 mt-6 fade-in">
                     <h3 class="text-lg font-bold text-primary mb-4">Payment History</h3>
                     <div class="overflow-x-auto">
                         <table class="w-full text-sm">
@@ -3021,7 +4423,7 @@
             const amount = 50000;
             
             const handler = PaystackPop.setup({
-                key: 'pk_test_your_key_here',
+                key: 'pk_test_a14fbb26a424c4d32650cf93389ced8e4d1a1b87',
                 email: student.parentEmail || 'student@ibrafoundation.edu',
                 amount: amount * 100,
                 currency: 'NGN',
@@ -3058,11 +4460,11 @@
                     };
                     db.payments.push(payment);
                     saveData();
-                    alert('Payment successful! Reference: ' + response.reference);
+                    showToast('Payment successful! Ref: ' + response.reference, 'success');
                     loadStudentDashboard();
                 },
                 onClose: function() {
-                    alert('Payment window closed');
+                    showToast('Payment window closed', 'info');
                 }
             });
             handler.openIframe();
@@ -3073,7 +4475,7 @@
             const student = db.currentUser;
             
             document.getElementById('mainContent').innerHTML = `
-                <div class="glass rounded-xl p-6 mb-6">
+                <div class="glass rounded-xl p-6 mb-6 fade-in">
                     <div class="grid md:grid-cols-3 gap-4">
                         <select id="myResultSession" class="input-field px-4 py-2 rounded-lg">
                             <option value="">Select Session</option>
@@ -3096,7 +4498,7 @@
             const student = db.currentUser;
             
             if (!session || !term) {
-                alert('Please select session and term');
+                showToast('Please select session and term', 'error');
                 return;
             }
             
@@ -3110,7 +4512,7 @@
             const average = results.length > 0 ? (totalScore / results.length).toFixed(2) : 0;
             
             document.getElementById('myResultsContainer').innerHTML = `
-                <div class="glass rounded-xl p-6 mb-6">
+                <div class="glass rounded-xl p-6 mb-6 fade-in">
                     <h3 class="text-lg font-bold text-primary mb-4">Results for ${term}, ${session}</h3>
                     <div class="overflow-x-auto">
                         <table class="w-full text-sm">
@@ -3237,58 +4639,7 @@
         }
 
         function myProfile() {
-            setPageTitle('My Profile');
-            const student = db.currentUser;
-            document.getElementById('mainContent').innerHTML = `
-                <div class="glass rounded-xl p-6 max-w-2xl mx-auto">
-                    <h3 class="text-lg font-bold text-primary mb-6">Student Profile</h3>
-                    <div class="space-y-4">
-                        <div class="grid md:grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-600">Surname</label>
-                                <p class="font-semibold">${student.surname}</p>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-600">First Name</label>
-                                <p class="font-semibold">${student.firstName}</p>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-600">Other Names</label>
-                                <p class="font-semibold">${student.otherNames || 'N/A'}</p>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-600">Date of Birth</label>
-                                <p class="font-semibold">${student.dob}</p>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-600">Gender</label>
-                                <p class="font-semibold">${student.gender}</p>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-600">Class</label>
-                                <p class="font-semibold">${student.class}</p>
-                            </div>
-                        </div>
-                        <div class="border-t pt-4 mt-4">
-                            <h4 class="font-semibold text-primary mb-3">Parent/Guardian Information</h4>
-                            <div class="grid md:grid-cols-2 gap-4">
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-600">Parent Name</label>
-                                    <p class="font-semibold">${student.parentName}</p>
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-600">Parent Phone</label>
-                                    <p class="font-semibold">${student.parentPhone}</p>
-                                </div>
-                                <div class="md:col-span-2">
-                                    <label class="block text-sm font-medium text-gray-600">Address</label>
-                                    <p class="font-semibold">${student.address}</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `;
+            showProfile();
         }
 
         function myTimetable() {
@@ -3298,7 +4649,7 @@
             
             if (classTimetable.length === 0) {
                 document.getElementById('mainContent').innerHTML = `
-                    <div class="glass rounded-xl p-6 text-center">
+                    <div class="glass rounded-xl p-6 text-center fade-in">
                         <p class="text-gray-500">No timetable available for your class yet.</p>
                     </div>
                 `;
@@ -3306,7 +4657,7 @@
             }
             
             const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
-            let html = `<div class="glass rounded-xl p-6"><h3 class="text-lg font-bold text-primary mb-4">${student.class} Timetable</h3>`;
+            let html = `<div class="glass rounded-xl p-6 fade-in"><h3 class="text-lg font-bold text-primary mb-4">${student.class} Timetable</h3>`;
             html += `<div class="overflow-x-auto"><table class="w-full text-sm border-collapse">`;
             html += `<thead><tr class="bg-primary text-white"><th class="p-3 border">Time</th>`;
             days.forEach(day => html += `<th class="p-3 border">${day}</th>`);
@@ -3328,10 +4679,6 @@
             document.getElementById('mainContent').innerHTML = html;
         }
 
-        function printMyReport() {
-            printMyReport();
-        }
-
         // ==================== ADMISSION PAYMENT ====================
         function payAdmissionFee() {
             const form = document.getElementById('admissionForm');
@@ -3341,7 +4688,7 @@
             }
             
             const handler = PaystackPop.setup({
-                key: 'pk_test_your_key_here',
+                key: 'pk_test_a14fbb26a424c4d32650cf93389ced8e4d1a1b87',
                 email: document.getElementById('admParentPhone').value + '@placeholder.com',
                 amount: 5000 * 100,
                 currency: 'NGN',
@@ -3372,6 +4719,7 @@
                         dob: document.getElementById('admDOB').value,
                         parentName: document.getElementById('admParentName').value,
                         parentPhone: document.getElementById('admParentPhone').value,
+                        parentEmail: document.getElementById('admParentEmail').value,
                         address: document.getElementById('admAddress').value,
                         admissionDate: new Date().toISOString().split('T')[0],
                         password: 'std123',
@@ -3394,109 +4742,22 @@
                     
                     saveData();
                     
+                    showToast(`Admission successful! Your ID: ${regNo}`, 'success');
                     alert(`Admission successful!\nYour Registration Number is: ${regNo}\nPassword: std123\n\nPlease save these credentials for login.`);
-                    showLogin();
+                    showLanding();
                 },
                 onClose: function() {
-                    alert('Payment cancelled. Admission incomplete.');
+                    showToast('Payment cancelled. Admission incomplete.', 'error');
                 }
             });
             handler.openIframe();
         }
 
         // ==================== UTILITY FUNCTIONS ====================
-        function setPageTitle(title) {
-            document.getElementById('pageTitle').textContent = title;
-        }
-
-        function manageStudents() {
-            setPageTitle('Student Management');
-            document.getElementById('mainContent').innerHTML = `
-                <div class="flex justify-between mb-6">
-                    <input type="text" placeholder="Search students..." class="input-field px-4 py-2 rounded-lg w-64" onkeyup="searchStudents(this.value)">
-                    <button onclick="exportStudents()" class="btn-primary px-4 py-2 rounded-lg"><i class="fas fa-download mr-2"></i>Export</button>
-                </div>
-                <div class="glass rounded-xl overflow-hidden">
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-sm" id="studentsTable">
-                            <thead class="table-header">
-                                <tr>
-                                    <th class="p-3 text-left">Reg No</th>
-                                    <th class="p-3 text-left">Name</th>
-                                    <th class="p-3 text-left">Class</th>
-                                    <th class="p-3 text-left">Gender</th>
-                                    <th class="p-3 text-left">Parent Contact</th>
-                                    <th class="p-3 text-left">Status</th>
-                                    <th class="p-3 text-left">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                ${db.students.map(s => `
-                                    <tr class="border-b hover:bg-green-50">
-                                        <td class="p-3 font-bold text-primary">${s.id}</td>
-                                        <td class="p-3">${s.surname} ${s.firstName}</td>
-                                        <td class="p-3"><span class="status-badge status-active">${s.class}</span></td>
-                                        <td class="p-3">${s.gender}</td>
-                                        <td class="p-3">${s.parentPhone}</td>
-                                        <td class="p-3"><span class="status-badge ${s.status === 'active' ? 'status-active' : 'status-pending'}">${s.status}</span></td>
-                                        <td class="p-3">
-                                            <button onclick="viewStudent('${s.id}')" class="text-blue-600 hover:text-blue-800 mr-2"><i class="fas fa-eye"></i></button>
-                                            <button onclick="editStudent('${s.id}')" class="text-green-600 hover:text-green-800 mr-2"><i class="fas fa-edit"></i></button>
-                                        </td>
-                                    </tr>
-                                `).join('')}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            `;
-        }
-
-        function searchStudents(query) {
-            const rows = document.querySelectorAll('#studentsTable tbody tr');
-            rows.forEach(row => {
-                const text = row.textContent.toLowerCase();
-                row.style.display = text.includes(query.toLowerCase()) ? '' : 'none';
-            });
-        }
-
-        function searchStaff(query) {
-            const rows = document.querySelectorAll('#staffTable tbody tr');
-            rows.forEach(row => {
-                const text = row.textContent.toLowerCase();
-                row.style.display = text.includes(query.toLowerCase()) ? '' : 'none';
-            });
-        }
-
-        function viewStudent(id) {
-            const student = db.students.find(s => s.id === id);
-            alert(`Student Details:\n\nName: ${student.surname} ${student.firstName}\nReg No: ${student.id}\nClass: ${student.class}\nDOB: ${student.dob}\nAddress: ${student.address}\nParent: ${student.parentName} (${student.parentPhone})`);
-        }
-
-        function editStudent(id) {
-            alert('Edit functionality - To be implemented with modal');
-        }
-
-        function deleteStaff(id) {
-            if (confirm('Are you sure you want to delete this staff member?')) {
-                db.staff = db.staff.filter(s => s.id !== id);
-                saveData();
-                manageStaff();
-            }
-        }
-
-        function editStaff(id) {
-            alert('Edit staff functionality - To be implemented');
-        }
-
-        function exportStudents() {
-            alert('Export to Excel - To be implemented');
-        }
-
         function financialReports() {
             setPageTitle('Financial Reports');
             document.getElementById('mainContent').innerHTML = `
-                <div class="grid md:grid-cols-2 gap-6">
+                <div class="grid md:grid-cols-2 gap-6 fade-in">
                     <div class="glass rounded-xl p-6">
                         <h3 class="text-lg font-bold text-primary mb-4">Revenue Overview</h3>
                         <div class="space-y-4">
@@ -3533,7 +4794,7 @@
             db.students.forEach(s => genderStats[s.gender]++);
             
             document.getElementById('mainContent').innerHTML = `
-                <div class="grid md:grid-cols-2 gap-6">
+                <div class="grid md:grid-cols-2 gap-6 fade-in">
                     <div class="glass rounded-xl p-6">
                         <h3 class="text-lg font-bold text-primary mb-4">Student Demographics</h3>
                         <div class="space-y-4">
@@ -3574,7 +4835,7 @@
         function settings() {
             setPageTitle('System Settings');
             document.getElementById('mainContent').innerHTML = `
-                <div class="glass rounded-xl p-6 max-w-2xl mx-auto">
+                <div class="glass rounded-xl p-6 max-w-2xl mx-auto fade-in">
                     <h3 class="text-lg font-bold text-primary mb-6">School Settings</h3>
                     <div class="space-y-4">
                         <div>
@@ -3604,18 +4865,18 @@
         }
 
         function saveSettings() {
-            alert('Settings saved successfully!');
+            showToast('Settings saved successfully!', 'success');
         }
 
         function academicCalendar() {
             setPageTitle('Academic Calendar');
             document.getElementById('mainContent').innerHTML = `
-                <div class="flex justify-between mb-6">
+                <div class="flex justify-between mb-6 fade-in">
                     <button onclick="showAddEventModal()" class="btn-primary px-6 py-2 rounded-lg">
                         <i class="fas fa-plus mr-2"></i>Add Event
                     </button>
                 </div>
-                <div class="glass rounded-xl p-6">
+                <div class="glass rounded-xl p-6 fade-in">
                     <div class="grid md:grid-cols-7 gap-2 mb-4">
                         ${['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(d => `
                             <div class="text-center font-bold text-primary p-2">${d}</div>
@@ -3639,13 +4900,13 @@
 
         function showAddEventModal() {
             const modal = document.createElement('div');
-            modal.className = 'fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4';
+            modal.className = 'fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 modal';
             modal.innerHTML = `
-                <div class="bg-white rounded-2xl max-w-md w-full p-6">
-                    <div class="flex justify-between items-center mb-6">
-                        <h3 class="text-xl font-bold text-primary">Add Calendar Event</h3>
-                        <button onclick="this.closest('.fixed').remove()" class="text-gray-500 hover:text-gray-700"><i class="fas fa-times text-xl"></i></button>
-                    </div>
+                <div class="bg-white rounded-2xl max-w-md w-full p-6 relative">
+                    <button onclick="this.closest('.fixed').remove()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                    <h3 class="text-xl font-bold text-primary mb-6">Add Calendar Event</h3>
                     <form onsubmit="saveCalendarEvent(event)" class="space-y-4">
                         <div>
                             <label class="block text-sm font-medium mb-1">Event Title</label>
@@ -3682,15 +4943,15 @@
             };
             db.calendar.push(newEvent);
             saveData();
-            alert('Event added!');
+            showToast('Event added!', 'success');
             academicCalendar();
-            document.querySelector('.fixed').remove();
+            document.querySelector('.modal').remove();
         }
 
         function viewReports() {
             setPageTitle('School Reports');
             document.getElementById('mainContent').innerHTML = `
-                <div class="grid md:grid-cols-2 gap-6">
+                <div class="grid md:grid-cols-2 gap-6 fade-in">
                     <div class="glass rounded-xl p-6 card-hover cursor-pointer" onclick="financialReports()">
                         <i class="fas fa-money-bill-wave text-4xl text-primary mb-4"></i>
                         <h3 class="text-xl font-bold mb-2">Financial Reports</h3>
@@ -3707,7 +4968,7 @@
 
         // Initialize
         window.onload = function() {
-            // Check if user is already logged in (in a real app, use session storage)
+            showLanding();
         };
     </script>
 </body>
